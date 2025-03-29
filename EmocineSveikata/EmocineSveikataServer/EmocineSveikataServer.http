@@ -1,0 +1,6 @@
+@EmocineSveikataServer_HostAddress = http://localhost:5054
+
+GET {{EmocineSveikataServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
