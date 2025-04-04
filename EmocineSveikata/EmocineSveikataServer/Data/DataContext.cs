@@ -10,7 +10,7 @@ namespace EmocineSveikataServer.Data
         
         }
 
-        public DbSet<DiscussionModel> Discussions { get; set; }
-        public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<Discussion> Discussions { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

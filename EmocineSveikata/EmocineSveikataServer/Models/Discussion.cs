@@ -2,7 +2,7 @@
 
 namespace EmocineSveikataServer.Models
 {
-    public class DiscussionModel
+    public class Discussion
     {
         public int Id { get; set; }
         public required string Title { get; set; }
@@ -10,6 +10,6 @@ namespace EmocineSveikataServer.Models
         public int Likes { get; set; }
         public bool IsDeleted { get; set; }
         public List<DiscussionTagEnum>? Tags { get; set; } = new List<DiscussionTagEnum>();
-        public List<CommentModel>? Comments { get; set; } = new List<CommentModel>();
+        public List<Comment>? Comments { get; set; } = new List<Comment>();
     }
 }

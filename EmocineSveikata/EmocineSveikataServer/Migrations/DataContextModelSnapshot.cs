@@ -21,7 +21,7 @@ namespace EmocineSveikataServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.CommentModel", b =>
+            modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -29,14 +29,14 @@ namespace EmocineSveikataServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CommentModelId")
+                    b.Property<int?>("CommentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DiscussionModelId")
+                    b.Property<int?>("DiscussionId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -47,14 +47,14 @@ namespace EmocineSveikataServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentModelId");
+                    b.HasIndex("CommentId");
 
-                    b.HasIndex("DiscussionModelId");
+                    b.HasIndex("DiscussionId");
 
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.DiscussionModel", b =>
+            modelBuilder.Entity("EmocineSveikataServer.Models.Discussion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,23 +84,23 @@ namespace EmocineSveikataServer.Migrations
                     b.ToTable("Discussions");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.CommentModel", b =>
+            modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
                 {
-                    b.HasOne("EmocineSveikataServer.Models.CommentModel", null)
+                    b.HasOne("EmocineSveikataServer.Models.Comment", null)
                         .WithMany("Replies")
-                        .HasForeignKey("CommentModelId");
+                        .HasForeignKey("CommentId");
 
-                    b.HasOne("EmocineSveikataServer.Models.DiscussionModel", null)
+                    b.HasOne("EmocineSveikataServer.Models.Discussion", null)
                         .WithMany("Comments")
-                        .HasForeignKey("DiscussionModelId");
+                        .HasForeignKey("DiscussionId");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.CommentModel", b =>
+            modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
                 {
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.DiscussionModel", b =>
+            modelBuilder.Entity("EmocineSveikataServer.Models.Discussion", b =>
                 {
                     b.Navigation("Comments");
                 });
