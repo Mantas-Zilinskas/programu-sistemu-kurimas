@@ -1,19 +1,32 @@
-﻿using EmocineSveikataServer.Models;
+﻿using AutoMapper;
+using EmocineSveikataServer.Dto.CommentDto;
+using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
+using EmocineSveikataServer.Services.CommentService;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EmocineSveikataServer.Services.DiscussionService
 {
 	public class DiscussionService : IDiscussionService
 	{
+		private readonly ICommentService _commentService;
 		private readonly IDiscussionRepository _repository;
-		public DiscussionService(IDiscussionRepository repository)
+		private readonly IMapper _mapper;
+		public DiscussionService(IDiscussionRepository repository, ICommentService commentService,
+			IMapper mapper)
 		{
 			_repository = repository;
+			_commentService = commentService;
+			_mapper = mapper;
 		}
 
-		public async Task CreateDiscussionAsync(Discussion discussion)
+		public async Task<DiscussionDto> CreateDiscussionAsync(DiscussionCreateDto discussionDto)
 		{
+			var discussion = _mapper.Map<Discussion>(discussionDto);
 			await _repository.AddDiscussionAsync(discussion);
+
+			return _mapper.Map<DiscussionDto>(discussion);
 		}
 
 		public async Task DeleteDiscussionAsync(int discussionId)
@@ -21,40 +34,62 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			await _repository.DeleteDiscussionAsync(discussionId);
 		}
 
-		public async Task<List<Discussion>> GetAllDiscussionsAsync()
+		public async Task<List<DiscussionDto>> GetAllDiscussionsAsync()
 		{
-			return (await _repository.GetAllDiscussionsAsync()).ToList();
+			var allDiscussions = (await _repository.GetAllDiscussionsAsync()).ToList();
+			return _mapper.Map<List<DiscussionDto>>(allDiscussions);
 		}
-		public async Task<List<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize)
+		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize)
 		{
 			var paginatedDiscussions = (await _repository.GetAllDiscussionsAsync()).Where(d => !d.IsDeleted)
 										.Skip((page - 1) * pageSize)
 										.Take(pageSize)
 										.ToList();
-			return paginatedDiscussions;
+			return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
 		}
-		public async Task<Discussion> GetDiscussionAsync(int discussionId)
+		public async Task<DiscussionDto> GetDiscussionAsync(int discussionId)
 		{
 			var discussion = await _repository.GetDiscussionAsync(discussionId);
-			
-			return discussion;
+			FixReplies(discussion);
+			return _mapper.Map<DiscussionDto>(discussion);
 		}
 
-		public async Task<Discussion> UpdateDiscussionAsync(int discussionId, Discussion discussion)
+		public async Task<DiscussionDto> UpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
 		{
-			return await _repository.UpdateDiscussionAsync(discussionId, discussion);
+			var discussion = _mapper.Map<Discussion>(discussionDto);
+			var updated = await _repository.UpdateDiscussionAsync(discussionId, discussion);
+			FixReplies(updated);
+			return _mapper.Map<DiscussionDto>(updated);
 		}
-
-		public async Task<Discussion> AddLikeAsync(int discussionId)
+		public async Task<DiscussionDto> AddCommentToDiscussionAsync(int discussionId, CommentCreateDto commentDto)
 		{
-			var discussion = await GetDiscussionAsync(discussionId);
+			var discussion = await _repository.GetDiscussionAsync(discussionId);
+			var comment = _mapper.Map<Comment>(commentDto);
+			discussion.Comments.Add(comment);
+			FixReplies(discussion);
+			await _commentService.CreateCommentAsync(comment);
+			await _repository.SaveChangesAsync();
+			return _mapper.Map<DiscussionDto>(discussion);
+		}
+		public async Task<DiscussionDto> AddLikeAsync(int discussionId)
+		{
+			var discussion = await _repository.GetDiscussionAsync(discussionId);
 			discussion.Likes++;
-			return await UpdateDiscussionAsync(discussionId, discussion);
+			FixReplies(discussion);
+			await SaveChangesAsync();
+			return _mapper.Map<DiscussionDto>(discussion);
 		}
-
 		public async Task SaveChangesAsync()
 		{
 			await _repository.SaveChangesAsync();
 		}
+
+		private Discussion FixReplies(Discussion discussion)
+		{
+			discussion.Comments.RemoveAll(c => c.CommentId != null);
+			_commentService.RemoveSoftDeletedReplies(discussion.Comments);
+			return discussion;
+		}
+
 	}
 }

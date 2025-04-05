@@ -1,6 +1,8 @@
 ﻿using EmocineSveikataServer.Data;
 using EmocineSveikataServer.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EmocineSveikataServer.Repositories.DiscussionRepository
 {
@@ -21,15 +23,8 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		public async Task DeleteDiscussionAsync(int id)
 		{
 			var discussion = await GetDiscussionAsync(id);
-			if (discussion is not null)
-			{
-				discussion.IsDeleted = true;
-				await _context.SaveChangesAsync();
-			}
-			else
-			{
-				throw new ArgumentException("Discussion not found");
-			}
+			discussion.IsDeleted = true;
+			await _context.SaveChangesAsync();
 		}
 
 		public async Task<IEnumerable<Discussion>> GetAllDiscussionsAsync()
@@ -39,26 +34,28 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 
 		public async Task<Discussion> GetDiscussionAsync(int id)
 		{
-			var discussion = await _context.Discussions.FindAsync(id);
+			var discussion = await _context.Discussions
+				.Include(d => d.Comments)
+				.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+
 			if (discussion is null)
 			{
-				throw new ArgumentException("Discussion not found");
+				throw new KeyNotFoundException("Discussion not found");
 			}
 
-			return await _context.Discussions.Include(d => d.Comments).FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+			discussion.Comments.RemoveAll(c => c.IsDeleted);
+			return discussion;
 		}
 
 		public async Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion)
 		{
-			if (id != discussion.Id)
-			{
-				throw new ArgumentException("Discussion not found");
-			}
-
-			_context.Entry(await GetDiscussionAsync(id)).CurrentValues.SetValues(discussion);
+			var existing = await GetDiscussionAsync(id);
+			existing.Title = discussion.Title;
+			existing.Content = discussion.Content;
+			existing.Tags = discussion.Tags;
 
 			await _context.SaveChangesAsync();
-			return discussion;
+			return existing;
 		}
 
 		public async Task SaveChangesAsync()
