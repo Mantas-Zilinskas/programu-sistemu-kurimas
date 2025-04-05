@@ -1,4 +1,4 @@
-﻿using EmocineSveikataServer.Models;
+﻿using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Services.CommentService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +17,6 @@ namespace EmocineSveikataServer.Controllers
 			_logger = logger;
 		}
 
-		[HttpPost("{discussionId}/comments")]
-		public async Task<IActionResult> AddCommentAsync(int discussionId, [FromBody] Comment comment)
-		{
-			return Ok(await _service.AddCommentToDiscussionAsync(discussionId, comment));
-		}
-
 		[HttpPost("{discussionId}/comments/{commentId}/like")]
 		public async Task<IActionResult> LikeCommentAsync(int commentId)
 		{
@@ -30,13 +24,13 @@ namespace EmocineSveikataServer.Controllers
 		}
 
 		[HttpPost("{discussionId}/comments/{commentId}/reply")]
-		public async Task<IActionResult> ReplyToCommentAsync(int discussionId, int commentId, [FromBody] Comment reply)
+		public async Task<IActionResult> ReplyToCommentAsync(int discussionId, int commentId, [FromBody] CommentCreateDto reply)
 		{
 			return Ok(await _service.ReplyToCommentAsync(discussionId, commentId, reply));
 		}
 
 		[HttpPut("{discussionId}/comments/{commentId}")]
-		public async Task<IActionResult> EditCommentAsync(int commentId, [FromBody] Comment comment)
+		public async Task<IActionResult> EditCommentAsync(int commentId, [FromBody] CommentUpdateDto comment)
 		{
 			return Ok(await _service.UpdateCommentAsync(commentId, comment));
 		}

@@ -15,19 +15,19 @@ public class CommentRepository : ICommentRepository
 	public async Task<IEnumerable<Comment>> GetCommentsByDiscussionAsync(int discussionId)
 	{
 		return await _context.Comments
-			.Where(c => !c.IsDeleted && c.Replies != null)
+			.Where(c => !c.IsDeleted && c.DiscussionId == discussionId)
 			.ToListAsync();
 	}
 
 	public async Task<Comment> GetCommentAsync(int id)
 	{
-		var comment = await _context.Comments.FindAsync(id);
+		var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
 		if (comment is null)
 		{
-			throw new ArgumentException("Comment not found");
+			throw new KeyNotFoundException("Comment not found");
 		}
 
-		return await _context.Comments.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
+		return comment;
 	}
 
 	public async Task AddCommentAsync(Comment comment)
@@ -38,24 +38,21 @@ public class CommentRepository : ICommentRepository
 
 	public async Task<Comment> UpdateCommentAsync(int id, Comment comment)
 	{
-		if (id != comment.Id)
-		{
-			throw new ArgumentException("Comment not found");
-		}
-
-		_context.Entry(await GetCommentAsync(id)).CurrentValues.SetValues(comment);
-
+		var existing = await GetCommentAsync(id);
+		existing.Content = comment.Content;
 		await _context.SaveChangesAsync();
-		return comment;
+		return existing;
 	}
 
 	public async Task DeleteCommentAsync(int commentId)
 	{
 		var comment = await GetCommentAsync(commentId);
-		if (comment != null)
-		{
-			comment.IsDeleted = true;
-			await _context.SaveChangesAsync();
-		}
+		comment.IsDeleted = true;
+		await _context.SaveChangesAsync();
+	}
+	
+	public async Task SaveChangesAsync()
+	{
+		await _context.SaveChangesAsync();
 	}
 }
