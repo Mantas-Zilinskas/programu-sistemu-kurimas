@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Services.DiscussionService;
+using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Dto.CommentDto;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -32,16 +34,18 @@ namespace EmocineSveikataServer.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateDiscussion([FromBody] Discussion discussion)
+		public async Task<IActionResult> CreateDiscussion([FromBody] DiscussionCreateDto discussionDto)
 		{
-			await _service.CreateDiscussionAsync(discussion);
-			return CreatedAtAction(nameof(GetDiscussion), new { discussionId = discussion.Id }, discussion);
+			var newDto = await _service.CreateDiscussionAsync(discussionDto);
+			return CreatedAtAction(nameof(GetDiscussion), new { discussionId = newDto.Id }, newDto);
 		}
 
-		[HttpPost("{discussionId}/like")]
-		public async Task<IActionResult> LikeDiscussion(int discussionId)
+		[HttpPut("{discussionId}")]
+		public async Task<IActionResult> EditDiscussion(int discussionId, [FromBody] DiscussionUpdateDto discussionDto)
 		{
-			return Ok(await _service.AddLikeAsync(discussionId));
+			var updatedDto = await _service.UpdateDiscussionAsync(discussionId, discussionDto);
+			if (updatedDto == null) return NotFound();
+			return Ok(updatedDto);
 		}
 
 		[HttpDelete("{discussionId}")]
@@ -50,5 +54,22 @@ namespace EmocineSveikataServer.Controllers
 			await _service.DeleteDiscussionAsync(discussionId);
 			return NoContent();
 		}
+
+		[HttpPost("{discussionId}/comments")]
+		public async Task<IActionResult> AddCommentAsync(int discussionId, [FromBody] CommentCreateDto comment)
+		{
+			var discussionDto = await _service.AddCommentToDiscussionAsync(discussionId, comment);
+			if (discussionDto == null) return NotFound();
+			return Ok(discussionDto);
+		}
+
+		[HttpPost("{discussionId}/like")]
+		public async Task<IActionResult> LikeDiscussion(int discussionId)
+		{
+			var discussionDto = await _service.AddLikeAsync(discussionId);
+			if (discussionDto == null) return NotFound();
+			return Ok(discussionDto);
+		}
+
 	}
 }

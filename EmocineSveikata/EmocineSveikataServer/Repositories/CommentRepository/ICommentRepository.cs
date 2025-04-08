@@ -9,5 +9,6 @@ namespace EmocineSveikataServer.Repositories.CommentRepository
 		Task AddCommentAsync(Comment comment);
 		Task<Comment> UpdateCommentAsync(int commentId,  Comment comment);
 		Task DeleteCommentAsync(int commentId);
+		Task SaveChangesAsync();
 	}
 }
