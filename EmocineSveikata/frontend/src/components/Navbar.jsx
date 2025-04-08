@@ -1,19 +1,32 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import './Navbar.css';
 
 const Navbar = () => {
+  const location = useLocation();
+  
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <Link to="/" className="navbar-brand">
           Emocinė Sveikata
-        </Typography>
-        <Button color="inherit" component={Link} to="/">
-          Diskusijos
-        </Button>
-      </Toolbar>
-    </AppBar>
+        </Link>
+        <div className="navbar-menu">
+          <Link 
+            to="/" 
+            className={`navbar-link ${location.pathname === '/' ? 'navbar-link-active' : ''}`}
+          >
+            Pagrindinis
+          </Link>
+          <Link 
+            to="/discussions" 
+            className={`navbar-link ${location.pathname === '/discussions' ? 'navbar-link-active' : ''}`}
+          >
+            Diskusijos
+          </Link>
+        </div>
+      </div>
+    </nav>
   );
 };
 
