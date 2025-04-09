@@ -1,116 +1,87 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  CircularProgress,
-  Box,
-} from '@mui/material';
-import {
-  fetchDiscussions,
-  createDiscussion,
-  selectDiscussions,
-  selectDiscussionStatus,
-  selectDiscussionError,
-} from '../store/slices/discussionSlice';
+import React, { useState } from 'react';
+import { useDiscussions } from '../contexts/DiscussionContext';
+import './Discussions.css';
 
 const Discussions = () => {
-  const dispatch = useDispatch();
-  const discussions = useSelector(selectDiscussions);
-  const status = useSelector(selectDiscussionStatus);
-  const error = useSelector(selectDiscussionError);
+  const { discussions, loading, error, createDiscussion } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
-
-  useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchDiscussions());
-    }
-  }, [status, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newDiscussion.title && newDiscussion.content) {
-      dispatch(createDiscussion(newDiscussion));
+      createDiscussion(newDiscussion);
       setNewDiscussion({ title: '', content: '' });
     }
   };
 
-  if (status === 'loading') {
+  if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
-      </Box>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+      </div>
     );
   }
 
-  if (status === 'failed') {
+  if (error) {
     return (
-      <Typography color="error" align="center" mt={4}>
+      <div className="error-message">
         Error: {error}
-      </Typography>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom mt={4}>
-        Diskusijos
-      </Typography>
+    <div className="discussions-container">
+      <h1 className="discussions-title">Diskusijos</h1>
 
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Pavadinimas"
+      <div className="discussions-form-card">
+        <form className="discussions-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="title" className="form-label">Pavadinimas</label>
+            <input
+              id="title"
+              type="text"
+              className="form-input"
               value={newDiscussion.title}
               onChange={(e) =>
                 setNewDiscussion({ ...newDiscussion, title: e.target.value })
               }
-              margin="normal"
               required
             />
-            <TextField
-              fullWidth
-              label="Turinys"
+          </div>
+          <div className="form-group">
+            <label htmlFor="content" className="form-label">Turinys</label>
+            <textarea
+              id="content"
+              className="form-textarea"
               value={newDiscussion.content}
               onChange={(e) =>
                 setNewDiscussion({ ...newDiscussion, content: e.target.value })
               }
-              margin="normal"
-              multiline
               rows={4}
               required
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2 }}
-            >
-              Sukurti diskusiją
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            className="submit-button"
+          >
+            Sukurti diskusiją
+          </button>
+        </form>
+      </div>
 
       {discussions.map((discussion) => (
-        <Card key={discussion.id} sx={{ mb: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              {discussion.title}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {discussion.content}
-            </Typography>
-          </CardContent>
-        </Card>
+        <div key={discussion.id} className="discussion-card">
+          <h2 className="discussion-title">
+            {discussion.title}
+          </h2>
+          <p className="discussion-content">
+            {discussion.content}
+          </p>
+        </div>
       ))}
-    </Container>
+    </div>
   );
 };
 

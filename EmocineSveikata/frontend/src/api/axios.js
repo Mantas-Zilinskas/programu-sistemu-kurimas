@@ -1,4 +1,4 @@
-// TODO: Implement API configuration when backend is ready
+// api konfiguracijos implementacija, kai backas bus ready
 // import axios from 'axios';
 
 // const api = axios.create({
