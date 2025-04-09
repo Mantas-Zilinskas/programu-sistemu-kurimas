@@ -70,24 +70,51 @@ try
 
     if (Directory.Exists(frontendPath))
     {
-        var npmProcess = new Process
+        var npmInstallProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "npm",
-                Arguments = "start",
+                FileName = "cmd.exe",
+                Arguments = "/c npm install",
                 WorkingDirectory = frontendPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute = true,
+                CreateNoWindow = false
             }
         };
-        npmProcess.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
-        npmProcess.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
-        npmProcess.Start();
-        npmProcess.BeginOutputReadLine();
-        npmProcess.BeginErrorReadLine();
+        npmInstallProcess.Start();
+        npmInstallProcess.WaitForExit();
+
+        var npmStartProcess = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c npm start",
+                WorkingDirectory = frontendPath,
+                UseShellExecute = true,
+                CreateNoWindow = false
+            }
+        };
+        npmStartProcess.Start();
+
+        try
+        {
+            var frontendUrl = "http://localhost:3000";
+            var browserProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = frontendUrl,
+                    UseShellExecute = true 
+                }
+            };
+            browserProcess.Start();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Could not open browser: {ex.Message}");
+        }
+
         Console.WriteLine($"Frontend server started at {frontendPath}");
     }
     else
@@ -105,7 +132,6 @@ var app = builder.Build();
 // === Middleware ===
 // 1. CORS middleware
 app.UseCors("AllowFrontend");
-
 
 if (app.Environment.IsDevelopment())
 {
