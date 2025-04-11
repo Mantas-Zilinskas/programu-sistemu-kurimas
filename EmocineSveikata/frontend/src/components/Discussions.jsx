@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDiscussions } from '../contexts/DiscussionContext';
 import './Discussions.css';
 
 const Discussions = () => {
-  const { discussions, loading, error, createDiscussion } = useDiscussions();
+  const { discussions, loading, error } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newDiscussion.title && newDiscussion.content) {
-      createDiscussion(newDiscussion);
-      setNewDiscussion({ title: '', content: '' });
-    }
-  };
 
   if (loading) {
     return (
@@ -32,43 +25,11 @@ const Discussions = () => {
 
   return (
     <div className="discussions-container">
-      <h1 className="discussions-title">Diskusijos</h1>
-
-      <div className="discussions-form-card">
-        <form className="discussions-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="title" className="form-label">Pavadinimas</label>
-            <input
-              id="title"
-              type="text"
-              className="form-input"
-              value={newDiscussion.title}
-              onChange={(e) =>
-                setNewDiscussion({ ...newDiscussion, title: e.target.value })
-              }
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="content" className="form-label">Turinys</label>
-            <textarea
-              id="content"
-              className="form-textarea"
-              value={newDiscussion.content}
-              onChange={(e) =>
-                setNewDiscussion({ ...newDiscussion, content: e.target.value })
-              }
-              rows={4}
-              required
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            className="submit-button"
-          >
-            Sukurti diskusiją
-          </button>
-        </form>
+      <div className="discussions-top">
+        <h1 className="discussions-title">Diskusijos</h1>
+        <Link to="/discussions/new" className="new-discussion-button">
+          Nauja diskusija
+        </Link>
       </div>
 
       {discussions.map((discussion) => (
