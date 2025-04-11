@@ -4,7 +4,7 @@ import { useDiscussions } from '../contexts/DiscussionContext';
 import './Discussions.css';
 
 const Discussions = () => {
-  const { discussions, tagsArray, selectedTag, setSelectedTag, loading, error } = useDiscussions();
+  const { discussions, tagsArray, selectedTag, setSelectedTag, isPopular, setIsPopular, loading, error } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
 
   if (loading) {
@@ -26,24 +26,34 @@ const Discussions = () => {
   return (
     <div className="discussions-container">
       <div className="discussions-top">
-        <h1 className="discussions-title">Diskusijos</h1>
+        <h1 className="discussions-title">Naujausios diskusijos</h1>
         <Link to="/discussions/new" className="new-discussion-button">
           Nauja diskusija
         </Link>
       </div>
 
-      <select
-        value={selectedTag}
-        onChange={(e) => setSelectedTag(e.target.value)}
-        className="tag-select"
-      >
-        <option value="">Visos diskusijos</option>
-        {tagsArray.map((tag, index) => (
-          <option key={index} value={tag}>
-            {tag}
-          </option>
-        ))}
-      </select>
+      <div className="discussions-filters">
+        <select
+          value={selectedTag}
+          onChange={(e) => setSelectedTag(e.target.value)}
+          className="tag-select"
+        >
+          <option value="">Visos diskusijos</option>
+          {tagsArray.map((tag, index) => (
+            <option key={index} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
+        <label className="popular-discussions-checkbox">
+          <input
+            type="checkbox"
+            checked={isPopular}
+            onChange={(e) => setIsPopular(e.target.checked)}
+          />
+          Populiariausios diskusijos
+        </label>
+      </div>
 
       {discussions.map((discussion) => (
         <div key={discussion.id} className="discussion-card">
@@ -60,6 +70,9 @@ const Discussions = () => {
           <p className="discussion-content">
             {discussion.content}
           </p>
+          <div className="discussion-likes">
+            <span>{discussion.likes} Likes</span>
+          </div>
         </div>
       ))}
     </div>

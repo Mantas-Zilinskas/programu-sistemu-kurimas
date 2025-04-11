@@ -28,16 +28,22 @@ export const DiscussionProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [tagsArray, setTagsArray] = useState([]);
   const [selectedTag, setSelectedTag] = useState('');
+  const [isPopular, setIsPopular] = useState(false);
 
   useEffect(() => {
     fetchTags();
-    fetchDiscussions(selectedTag);
-  }, [selectedTag]);
+  }, []);
 
-  const fetchDiscussions = async (tag) => {
+  useEffect(() => {
+    fetchDiscussions(selectedTag, isPopular);
+  }, [selectedTag, isPopular]);
+
+  const fetchDiscussions = async (tag, isPopular) => {
     setLoading(true);
     try {
-      const url = tag ? `/api/discussions?tag=${encodeURIComponent(tag)}` : '/api/discussions';
+      const url = tag
+        ? `/api/discussions?tag=${encodeURIComponent(tag)}&isPopular=${encodeURIComponent(isPopular)}`
+        : `/api/discussions?isPopular=${encodeURIComponent(isPopular)}`;
       const response = await fetch(url);
       const data = await response.json();
       setDiscussions(data);
@@ -64,6 +70,8 @@ export const DiscussionProvider = ({ children }) => {
     tagsArray,
     selectedTag,
     setSelectedTag,
+    isPopular,
+    setIsPopular,
     loading,
     error
   };

@@ -21,9 +21,9 @@ namespace EmocineSveikataServer.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetDiscussions([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] DiscussionTagEnum? tag = null)
+		public async Task<IActionResult> GetDiscussions([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] DiscussionTagEnum? tag = null, [FromQuery] bool isPopular = false)
 		{
-			return Ok(await _service.GetPagedDiscussionsAsync(page, pageSize, tag));
+			return Ok(await _service.GetPagedDiscussionsAsync(page, pageSize, tag, isPopular));
 		}
 
 		[HttpGet("tags")]

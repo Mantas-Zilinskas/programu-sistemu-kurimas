@@ -46,7 +46,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
 		}
 
-		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag)
+		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
 		{
 			var discussions = (await _repository.GetAllDiscussionsAsync())
 				.Where(d => !d.IsDeleted);
@@ -54,6 +54,11 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			if(tag != null)
 			{
 				discussions = discussions.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
+			}
+
+			if(isPopular)
+			{
+				discussions = discussions.OrderByDescending(d => d.Likes);
 			}
 
 			var paginatedDiscussions = discussions

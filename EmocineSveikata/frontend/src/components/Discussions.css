@@ -4,9 +4,13 @@
   padding: 0 20px;
 }
 
-.discussions-top {
+.discussions-top, .discussions-filters {
   display: flex;
   justify-content: space-between;
+}
+
+.popular-discussions-checkbox {
+  margin: 15px 0px;
 }
 
 .discussions-title {
@@ -52,6 +56,10 @@
 .discussion-content {
   color: #555;
   line-height: 1.5;
+}
+
+.discussion-likes {
+  color: #922;
 }
 
 .loading-container {
