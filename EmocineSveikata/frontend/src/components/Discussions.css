@@ -27,6 +27,28 @@
   margin-bottom: 12px;
 }
 
+.discussion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.discussion-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.discussion-tag {
+  background-color: #e5e7eb;
+  color: #374151;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
 .discussion-content {
   color: #555;
   line-height: 1.5;

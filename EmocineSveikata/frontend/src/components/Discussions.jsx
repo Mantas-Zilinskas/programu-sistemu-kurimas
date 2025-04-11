@@ -33,11 +33,18 @@ const Discussions = () => {
       </div>
 
       {discussions.map((discussion) => (
-        <div key={discussion.id} className="discussion-card">
-          <h2 className="discussion-title">
-            {discussion.title}
-          </h2>
-          <p className="discussion-content">
+        <div key={discussion.id} class="discussion-card">
+          <div class="discussion-header">
+            <h2 class="discussion-title">{discussion.title}</h2>
+            <div class="discussion-tags">
+              {discussion.tags.map((tag, index) => (
+                <span key={index} class="discussion-tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          <p class="discussion-content">
             {discussion.content}
           </p>
         </div>
