@@ -8,6 +8,11 @@ export const useDiscussionsNew = () => {
 
 export const DiscussionNewProvider = ({ children }) => {
   const [error, setError] = useState(null);
+  const [tagsArray, setTagsArray] = useState([]);
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
 
   const createDiscussion = async (discussionData) => {
     try {
@@ -26,8 +31,21 @@ export const DiscussionNewProvider = ({ children }) => {
       throw err;
     }
   };
+  
+  const fetchTags = async () => {
+    try {
+      
+      const response = await fetch('/api/discussions/tags');
+      const data = await response.json();
+      setTagsArray(data);
+    } catch (err) {
+      setError('Failed to fetch tags');
+    }
+  };
 
   const value = {
+    tagsArray,
+    setTagsArray,
     error,
     createDiscussion
   };

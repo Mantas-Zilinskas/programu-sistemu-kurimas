@@ -6,7 +6,6 @@
 
 .new-discussion-title {
   font-size: 2rem;
-  margin: 32px 0 24px;
 }
 
 .new-discussion-form-card {
@@ -52,6 +51,27 @@
   font-family: inherit;
 }
 
+.tag-select-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-chip {
+  background-color: #e5e7eb;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+}
+
 .submit-button {
   background-color: #1976d2;
   color: white;
@@ -62,11 +82,23 @@
   font-size: 1rem;
   font-weight: 500;
   align-self: flex-start;
-  margin-top: 8px;
   transition: background-color 0.3s;
 }
 
-.submit-button:hover {
+.add-tag-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0px 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  align-self: flex-start;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover, .add-tag-button:hover {
   background-color: #1565c0;
 }
 

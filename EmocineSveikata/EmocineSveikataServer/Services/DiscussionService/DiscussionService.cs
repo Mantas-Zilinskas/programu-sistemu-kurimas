@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Enums;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Services.CommentService;
@@ -39,6 +40,12 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			var allDiscussions = (await _repository.GetAllDiscussionsAsync()).ToList();
 			return _mapper.Map<List<DiscussionDto>>(allDiscussions);
 		}
+
+		public List<string> GetAllTags()
+		{
+			return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
+		}
+
 		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize)
 		{
 			var paginatedDiscussions = (await _repository.GetAllDiscussionsAsync()).Where(d => !d.IsDeleted)

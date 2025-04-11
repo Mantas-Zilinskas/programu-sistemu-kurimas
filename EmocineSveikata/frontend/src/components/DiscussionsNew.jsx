@@ -3,8 +3,19 @@ import { useDiscussionsNew } from '../contexts/DiscussionNewContext';
 import './DiscussionsNew.css';
 
 const DiscussionsNew = () => {
-  const { error, createDiscussion } = useDiscussionsNew();
-  const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
+  const { tagsArray, setTagsArray, error, createDiscussion } = useDiscussionsNew();
+  const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '', tags: [] });
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
+
+  const handleAddTag = () => {
+    if (currentTag && tagsArray.includes(currentTag)) {
+      setSelectedTags([...selectedTags, currentTag]);
+      setTagsArray(tagsArray.filter((tag) => tag !== currentTag));
+      setCurrentTag("");
+      setNewDiscussion({ ...newDiscussion, tags: [...selectedTags, currentTag] });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +64,31 @@ const DiscussionsNew = () => {
               rows={4}
               required
             ></textarea>
+          </div>
+          <div className="form-group">
+            <label htmlFor="tags" className="form-label">Žymos</label>
+            <div className="tag-select-container">
+              <select
+                id="tags"
+                className="tag-select"
+                value={currentTag}
+                onChange={(e) => setCurrentTag(e.target.value)}
+              >
+                <option value="" disabled>Pasirinkti žymą</option>
+                {tagsArray.map((tag) => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+              <button type="button" className="add-tag-button" onClick={handleAddTag}>+</button>
+            </div>
+            <div className="selected-tags-wrapper">
+              <label htmlFor="selected-tags-label" className="form-label">Pasirinktos žymos:</label>
+              <div className="selected-tags">
+                {selectedTags.map((tag) => (
+                  <span key={tag} className="tag-chip">{tag}</span>
+                ))}
+              </div>
+            </div>
           </div>
           <button
             type="submit"

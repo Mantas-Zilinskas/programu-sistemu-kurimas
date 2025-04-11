@@ -7,6 +7,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
 	public interface IDiscussionService
 	{
 		Task<List<DiscussionDto>> GetAllDiscussionsAsync();
+		List<string> GetAllTags();
 		Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize);
 		Task<DiscussionDto> GetDiscussionAsync(int discussionId);
 		Task<DiscussionDto> CreateDiscussionAsync(DiscussionCreateDto discussion);

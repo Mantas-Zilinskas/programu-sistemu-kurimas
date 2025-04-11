@@ -25,6 +25,14 @@ namespace EmocineSveikataServer.Controllers
 			return Ok(await _service.GetPagedDiscussionsAsync(page, pageSize));
 		}
 
+		[HttpGet("tags")]
+		public IActionResult GetTags()
+		{
+			var tagStrings = _service.GetAllTags();
+
+			return Ok(tagStrings);
+		}
+
 		[HttpGet("{discussionId}")]
 		public async Task<IActionResult> GetDiscussion(int discussionId)
 		{
