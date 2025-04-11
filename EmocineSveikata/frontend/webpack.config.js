@@ -37,9 +37,8 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     port: 3000,
-    // TODO: Add proxy configuration when backend is ready
-    // proxy: {
-    //   '/api': 'http://localhost:5054',
-    // },
+     proxy: {
+       '/api': 'http://localhost:5054',
+     },
   },
 };
