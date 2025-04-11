@@ -1,11 +1,13 @@
-// api konfiguracijos implementacija, kai backas bus ready
-// import axios from 'axios';
+import React from 'react';
+import { DiscussionProvider } from './contexts/DiscussionContext';
+import Discussions from './components/Discussions';
 
-// const api = axios.create({
-//   baseURL: 'http://localhost:5054',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
+function App() {
+    return (
+        <DiscussionProvider>
+            <Discussions />
+        </DiscussionProvider>
+    );
+}
 
-// export default api;
+export default App;
