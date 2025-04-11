@@ -46,12 +46,21 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
 		}
 
-		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize)
+		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag)
 		{
-			var paginatedDiscussions = (await _repository.GetAllDiscussionsAsync()).Where(d => !d.IsDeleted)
-										.Skip((page - 1) * pageSize)
-										.Take(pageSize)
-										.ToList();
+			var discussions = (await _repository.GetAllDiscussionsAsync())
+				.Where(d => !d.IsDeleted);
+
+			if(tag != null)
+			{
+				discussions = discussions.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
+			}
+
+			var paginatedDiscussions = discussions
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
+				.ToList();
+
 			return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
 		}
 		public async Task<DiscussionDto> GetDiscussionAsync(int discussionId)

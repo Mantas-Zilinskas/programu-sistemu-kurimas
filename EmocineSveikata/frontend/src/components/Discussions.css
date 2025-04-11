@@ -69,6 +69,42 @@
   animation: spin 1s linear infinite;
 }
 
+.tag-select {
+  font-size: 16px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 200px;
+}
+
+.tag-select:focus {
+  border-color: #007bff;
+  background-color: #e9f0ff;
+  outline: none;
+}
+
+.tag-select:hover {
+  border-color: #007bff;
+  background-color: #f1f1f1;
+}
+
+.tag-select option {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  border: none;
+}
+
+.tag-select:active {
+  background-color: #e9f0ff;
+}
+
 .new-discussion-button {
   background-color: #1976d2;
   color: white;

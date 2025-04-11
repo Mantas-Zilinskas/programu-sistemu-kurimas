@@ -26,16 +26,19 @@ export const DiscussionProvider = ({ children }) => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tagsArray, setTagsArray] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
 
   useEffect(() => {
-    fetchDiscussions();
-  }, []);
+    fetchTags();
+    fetchDiscussions(selectedTag);
+  }, [selectedTag]);
 
-  const fetchDiscussions = async () => {
+  const fetchDiscussions = async (tag) => {
     setLoading(true);
     try {
-      
-      const response = await fetch('/api/discussions?pageSize=100'); // TODO pakeisti į puslapius ar infinite scroll
+      const url = tag ? `/api/discussions?tag=${encodeURIComponent(tag)}` : '/api/discussions';
+      const response = await fetch(url);
       const data = await response.json();
       setDiscussions(data);
       setLoading(false);
@@ -44,12 +47,25 @@ export const DiscussionProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  
+  const fetchTags = async () => {
+    try {
+      
+      const response = await fetch('/api/discussions/tags');
+      const data = await response.json();
+      setTagsArray(data);
+    } catch (err) {
+      setError('Failed to fetch tags');
+    }
+  };
 
   const value = {
     discussions,
+    tagsArray,
+    selectedTag,
+    setSelectedTag,
     loading,
-    error,
-    fetchDiscussions
+    error
   };
 
   return (

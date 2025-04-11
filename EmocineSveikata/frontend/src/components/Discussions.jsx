@@ -4,7 +4,7 @@ import { useDiscussions } from '../contexts/DiscussionContext';
 import './Discussions.css';
 
 const Discussions = () => {
-  const { discussions, loading, error } = useDiscussions();
+  const { discussions, tagsArray, selectedTag, setSelectedTag, loading, error } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
 
   if (loading) {
@@ -32,19 +32,32 @@ const Discussions = () => {
         </Link>
       </div>
 
+      <select
+        value={selectedTag}
+        onChange={(e) => setSelectedTag(e.target.value)}
+        className="tag-select"
+      >
+        <option value="">Visos diskusijos</option>
+        {tagsArray.map((tag, index) => (
+          <option key={index} value={tag}>
+            {tag}
+          </option>
+        ))}
+      </select>
+
       {discussions.map((discussion) => (
-        <div key={discussion.id} class="discussion-card">
-          <div class="discussion-header">
-            <h2 class="discussion-title">{discussion.title}</h2>
-            <div class="discussion-tags">
+        <div key={discussion.id} className="discussion-card">
+          <div className="discussion-header">
+            <h2 className="discussion-title">{discussion.title}</h2>
+            <div className="discussion-tags">
               {discussion.tags.map((tag, index) => (
-                <span key={index} class="discussion-tag">
+                <span key={index} className="discussion-tag">
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-          <p class="discussion-content">
+          <p className="discussion-content">
             {discussion.content}
           </p>
         </div>

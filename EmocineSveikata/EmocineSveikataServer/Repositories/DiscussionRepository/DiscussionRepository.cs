@@ -29,7 +29,7 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 
 		public async Task<IEnumerable<Discussion>> GetAllDiscussionsAsync()
 		{
-			return await _context.Discussions.ToListAsync();
+			return await _context.Discussions.OrderByDescending(d => d.Id).ToListAsync();
 		}
 
 		public async Task<Discussion> GetDiscussionAsync(int id)

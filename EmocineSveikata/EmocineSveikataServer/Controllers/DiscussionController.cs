@@ -3,6 +3,7 @@ using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Services.DiscussionService;
 using EmocineSveikataServer.Dto.DiscussionDto;
 using EmocineSveikataServer.Dto.CommentDto;
+using EmocineSveikataServer.Enums;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -20,9 +21,9 @@ namespace EmocineSveikataServer.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetDiscussions([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+		public async Task<IActionResult> GetDiscussions([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] DiscussionTagEnum? tag = null)
 		{
-			return Ok(await _service.GetPagedDiscussionsAsync(page, pageSize));
+			return Ok(await _service.GetPagedDiscussionsAsync(page, pageSize, tag));
 		}
 
 		[HttpGet("tags")]
