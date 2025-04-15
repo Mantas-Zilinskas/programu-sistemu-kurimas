@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Comment from '../components/Comment'
 import './DiscussionInside.css';
 import { useParams } from 'react-router-dom';
 import { fetchDiscussion } from '../api/discussionApi.js'
@@ -28,18 +29,19 @@ const DiscussionInside = () => {
   return (
     <>
       <div className='discussion-container'>
-        
-        <div className='discussion-card'>
+        <section className='discussion-card'>
           {(loading)
             ? (
                 <>
-                  <Skeleton variant="text" style={{ width: '60%', fontSize: '1.5em'}} />
-                  <Skeleton variant="rounded" style={{ width: '100%', height: '100px'}} />
+                  <Skeleton variant="text" className='skeleton-title' />
+                  <Skeleton variant="text" className='skeleton-body' />
+                  <Skeleton variant="text" className='skeleton-body' />
+                  <Skeleton variant="text" className='skeleton-body' />
                 </>
           ) : (
               <div style={{display: 'flex'}}>
-                <div className='small-box'>
-                  <DiscussionWidget count={discussion.likes} id={5} loading={loading} />
+                <div className='margin-right'>
+                  <DiscussionWidget count={discussion.likes} discussionId={id} loading={loading} />
                 </div>
                 <div className='content'>
                   <h3 className='discussion-title'>{discussion.title}</h3>
@@ -48,7 +50,13 @@ const DiscussionInside = () => {
               </div>
             )
           }
-        </div>
+        </section>
+        <p className='negative-top-margin'>Comments:</p>
+        <section>
+          {loading || discussion.comments.map((comment) => (
+              <Comment key={comment.id} comment={comment} />
+          ))}
+        </section>
       </div>
     </>
   )

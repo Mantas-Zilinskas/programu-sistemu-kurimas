@@ -4,7 +4,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import './DiscussionWidgets.css'
 import Skeleton from '@mui/material/Skeleton';
 
-const LoveButton = ({count, id, loading}) => {
+const DiscussionWidget = ({count, discussionId, loading}) => {
   
   const [likes, setLikes] = useState(count);
   const [liked, setLiked] = useState(false);
@@ -35,4 +35,4 @@ const LoveButton = ({count, id, loading}) => {
   )
 }
 
-export default LoveButton;
+export default DiscussionWidget;

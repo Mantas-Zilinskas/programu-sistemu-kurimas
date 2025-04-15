@@ -1,8 +1,17 @@
+
 .discussion-container {
   width: 80%;
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.negative-top-margin {
+  margin-top: -25px;
+}
+
+.margin-right {
+ margin-right: 10px;
 }
 
 .discussion-card {
@@ -18,10 +27,15 @@
   flex-direction: column;
 }
 
-.small-box {
-  margin-right: 10px;
-}
-
 .discussion-title {
   margin-bottom: 0;
+}
+
+.skeleton-title {
+  width: 60%; 
+  font-size: 1.5em;
+}
+
+.skeleton-body {
+  width: 100%;
 }

@@ -1,0 +1,36 @@
+.like-button-active {
+  color: #d70a0a;
+  margin-bottom: 0.25em;
+}
+
+.like-button {
+  color: grey;
+  margin-bottom: 0.25em;
+}
+
+.reply-button {
+  color: grey;
+}
+
+.like-button-active,
+.like-button,
+.reply-button {
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.like-button-active:hover,
+.like-button:hover,
+.reply-button:hover {
+  transform: scale(1.2);
+}
+
+.container {
+  background-color: #e7e7e7;
+  border-radius: 10px;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
