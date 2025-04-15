@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Discussions from './components/Discussions';
-import DiscussionInside from './components/DiscussionInside';
+import DiscussionInside from './pages/DiscussionInside';
 import DiscussionsNew from './components/DiscussionsNew';
 import './App.css';
 
