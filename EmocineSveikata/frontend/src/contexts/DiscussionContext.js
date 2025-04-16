@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Mock data 
+// Mock data
+/*
 const mockDiscussions = [
   {
     id: 1,
@@ -13,6 +14,7 @@ const mockDiscussions = [
     content: 'Kokią naudą pastebėjote praktikuodami meditaciją?'
   }
 ];
+*/
 
 const DiscussionContext = createContext();
 
@@ -24,65 +26,54 @@ export const DiscussionProvider = ({ children }) => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tagsArray, setTagsArray] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
+  const [isPopular, setIsPopular] = useState(false);
 
   useEffect(() => {
-    fetchDiscussions();
+    fetchTags();
   }, []);
 
-  const fetchDiscussions = async () => {
+  useEffect(() => {
+    fetchDiscussions(selectedTag, isPopular);
+  }, [selectedTag, isPopular]);
+
+  const fetchDiscussions = async (tag, isPopular) => {
     setLoading(true);
     try {
-      //  API simuliacija
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // pvz veliau bus naudojamas kaip fetch call'as backend API
-      // const response = await fetch('/api/discussions');
-      // const data = await response.json();
-      // setDiscussions(data);
-      
-      setDiscussions(mockDiscussions);
+      const url = tag
+        ? `/api/discussions?tag=${encodeURIComponent(tag)}&isPopular=${encodeURIComponent(isPopular)}`
+        : `/api/discussions?isPopular=${encodeURIComponent(isPopular)}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setDiscussions(data);
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch discussions');
       setLoading(false);
     }
   };
-
-
-  const createDiscussion = async (discussionData) => {
+  
+  const fetchTags = async () => {
     try {
-      //API simuliacija 
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // pvz veliau bus kaip POST request i backend API
-      // const response = await fetch('/api/discussions', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(discussionData),
-      // });
-      // const data = await response.json();
-      
-      const newDiscussionWithId = {
-        id: Date.now(),
-        ...discussionData
-      };
-      
-      setDiscussions(prevDiscussions => [...prevDiscussions, newDiscussionWithId]);
-      return newDiscussionWithId;
+      const response = await fetch('/api/discussions/tags');
+      const data = await response.json();
+      setTagsArray(data);
     } catch (err) {
-      setError('Failed to create discussion');
-      throw err;
+      setError('Failed to fetch tags');
     }
   };
 
   const value = {
     discussions,
+    tagsArray,
+    selectedTag,
+    setSelectedTag,
+    isPopular,
+    setIsPopular,
     loading,
-    error,
-    fetchDiscussions,
-    createDiscussion
+    error
   };
 
   return (

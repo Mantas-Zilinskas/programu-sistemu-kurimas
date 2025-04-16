@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Enums;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Services.CommentService;
@@ -39,12 +40,32 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			var allDiscussions = (await _repository.GetAllDiscussionsAsync()).ToList();
 			return _mapper.Map<List<DiscussionDto>>(allDiscussions);
 		}
-		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize)
+
+		public List<string> GetAllTags()
 		{
-			var paginatedDiscussions = (await _repository.GetAllDiscussionsAsync()).Where(d => !d.IsDeleted)
-										.Skip((page - 1) * pageSize)
-										.Take(pageSize)
-										.ToList();
+			return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
+		}
+
+		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+		{
+			var discussions = (await _repository.GetAllDiscussionsAsync())
+				.Where(d => !d.IsDeleted);
+
+			if(tag != null)
+			{
+				discussions = discussions.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
+			}
+
+			if(isPopular)
+			{
+				discussions = discussions.OrderByDescending(d => d.Likes);
+			}
+
+			var paginatedDiscussions = discussions
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
+				.ToList();
+
 			return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
 		}
 		public async Task<DiscussionDto> GetDiscussionAsync(int discussionId)
