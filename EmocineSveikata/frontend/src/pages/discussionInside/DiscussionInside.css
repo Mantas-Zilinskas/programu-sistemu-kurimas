@@ -3,7 +3,7 @@
   width: 80%;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 2rem 0rem 2rem;
 }
 
 .negative-top-margin {
@@ -38,4 +38,10 @@
 
 .skeleton-body {
   width: 100%;
+}
+
+.horizontal-divider {
+  width: 100%;
+  color: lightslategray;
+  padding-top: 0.5em;
 }

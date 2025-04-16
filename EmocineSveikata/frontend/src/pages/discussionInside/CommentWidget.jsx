@@ -3,7 +3,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ReplyIcon from '@mui/icons-material/Reply';
 import './CommentWidget.css'
 
-const CommentWidget = ({ count, CommentId }) => {
+const CommentWidget = ({ count, CommentId, handleReply, renderFunction = ()=>null}) => {
 
   const [likes, setLikes] = useState(count);
   const [liked, setLiked] = useState(false);
@@ -15,10 +15,6 @@ const CommentWidget = ({ count, CommentId }) => {
     setLikes(likeState ? likes - 1 : likes + 1)
   }
 
-  const handleReply = () => {
-    console.log('implement me!') // TO DO
-  }
-
   return (
     <>
       <div className='container'>
@@ -26,6 +22,7 @@ const CommentWidget = ({ count, CommentId }) => {
         <FavoriteIcon onClick={handleLike} className={(liked) ? 'like-button-active' : 'like-button'} />
         <ReplyIcon className='reply-button' onClick={handleReply} />
       </div>
+      {renderFunction()}
     </>
   )
 }

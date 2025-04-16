@@ -1,0 +1,18 @@
+.comment-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  margin: 8px 0px;
+}
+
+.horizontal-divider {
+  width: 100%;
+  color: lightslategray;
+  padding-top: 0.5em;
+}
+
+.pointer-icon {
+  margin-left: 0.125em;
+  margin-bottom: -12px;
+}

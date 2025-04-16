@@ -4,7 +4,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import './DiscussionWidgets.css'
 import Skeleton from '@mui/material/Skeleton';
 
-const DiscussionWidget = ({count, discussionId, loading}) => {
+const DiscussionWidget = ({count, discussionId, handleReply}) => {
   
   const [likes, setLikes] = useState(count);
   const [liked, setLiked] = useState(false);
@@ -16,22 +16,12 @@ const DiscussionWidget = ({count, discussionId, loading}) => {
     setLikes(likeState ? likes - 1 : likes + 1)
   } 
 
-
   return (
-  <>
-      {loading
-        ? (
-          <Skeleton variant="rounded" style={{ width: '100px', height: '100px' }} />
-        ) :
-        (
-          <div className='container'>
-            <>{likes}</>
-            < FavoriteIcon onClick={handleLike} className={(liked) ? 'like-button-active' : 'like-button'} />
-            < CommentIcon className='comment-button'/>
-          </div>
-         )
-      }
-  </>
+    <div className='container'>
+      <>{likes}</>
+      < FavoriteIcon onClick={handleLike} className={(liked) ? 'like-button-active' : 'like-button'} />
+      < CommentIcon onClick={handleReply} className='comment-button'/>
+    </div>     
   )
 }
 
