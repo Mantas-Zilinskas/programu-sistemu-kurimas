@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Discussions from './components/Discussions';
 import DiscussionsNew from './components/DiscussionsNew';
+import Rooms from './components/Rooms';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/discussions" element={<Discussions />} />
             <Route path="/discussions/new" element={<DiscussionsNew />} />
+            <Route path="/rooms" element={<Rooms />} />
           </Routes>
         </main>
       </div>

@@ -1,0 +1,40 @@
+.rooms-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.rooms-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.rooms-title {
+  font-size: 2rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #1976d2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  margin-top: 32px;
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
