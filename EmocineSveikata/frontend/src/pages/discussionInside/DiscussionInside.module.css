@@ -1,20 +1,19 @@
-
-.discussion-container {
+.discussionContainer {
   width: 80%;
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 2rem 0rem 2rem;
 }
 
-.negative-top-margin {
+.negativeTopMargin {
   margin-top: -25px;
 }
 
-.margin-right {
+.marginRight {
  margin-right: 10px;
 }
 
-.discussion-card {
+.discussionCard {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -27,20 +26,20 @@
   flex-direction: column;
 }
 
-.discussion-title {
+.discussionTitle {
   margin-bottom: 0;
 }
 
-.skeleton-title {
+.skeletonTitle {
   width: 60%; 
   font-size: 1.5em;
 }
 
-.skeleton-body {
+.skeletonBody {
   width: 100%;
 }
 
-.horizontal-divider {
+.horizontalDivider {
   width: 100%;
   color: lightslategray;
   padding-top: 0.5em;

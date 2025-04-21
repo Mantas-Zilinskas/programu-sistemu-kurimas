@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Comment from './Comment'
-import './DiscussionInside.css';
+import styles from './DiscussionInside.module.css';
 import { useParams } from 'react-router-dom';
 import { fetchDiscussion } from '../../api/discussionApi.js';
 import { postCommentOnDiscussion } from '../../api/commentApi.js'
@@ -37,30 +37,30 @@ const DiscussionInside = () => {
 
   return (
     <>
-      <div className='discussion-container'>
-        <section className='discussion-card'>
+      <div className={styles.discussionContainer}>
+        <section className={styles.discussionCard}>
           {(loading)
             ? (
                 <>
-                  <Skeleton variant="text" className='skeleton-title' />
-                  <Skeleton variant="text" className='skeleton-body' />
-                  <Skeleton variant="text" className='skeleton-body' />
-                  <Skeleton variant="text" className='skeleton-body' />
+                <Skeleton variant="text" className={styles.skeletonTitle} />
+                <Skeleton variant="text" className={styles.skeletonBody} />
+                <Skeleton variant="text" className={styles.skeletonBody} />
+                <Skeleton variant="text" className={styles.skeletonBody} />
                 </>
             ) : (
               <>
                 <div style={{display: 'flex'}}>
-                  <div className='margin-right'>
+                  <div className={styles.marginRight}>
                     <DiscussionWidget count={discussion.likes} discussionId={id} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
                   </div>
-                  <div className='content'>
-                    <h3 className='discussion-title'>{discussion.title}</h3>
+                  <div className={styles.content}>
+                    <h3 className={styles.discussionTitle}>{discussion.title}</h3>
                     <div>{discussion.content}</div>
                   </div>
                 </div>
                 {newCommentOpen ? (
                   <>
-                    <Divider className='horizontal-divider' />
+                    <Divider className={styles.horizontalDivider} />
                     <TextField
                       label="Comment"
                       multiline
@@ -85,7 +85,7 @@ const DiscussionInside = () => {
             )
           }
         </section>
-        <p className='negative-top-margin'>Comments:</p>
+        <p className={styles.negativeTopMargin}>Comments:</p>
         <section>
           {loading || discussion.comments.map((comment) => (
             <Comment key={comment.id} comment={comment} discussionId={id} />
