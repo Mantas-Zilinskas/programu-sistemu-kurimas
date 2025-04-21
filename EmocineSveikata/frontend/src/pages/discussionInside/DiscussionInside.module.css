@@ -44,3 +44,20 @@
   color: lightslategray;
   padding-top: 0.5em;
 }
+
+.tags {
+  justify-content: flex-end;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  background-color: #e5e7eb;
+  color: #374151;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  margin-bottom: 0.5em;
+}

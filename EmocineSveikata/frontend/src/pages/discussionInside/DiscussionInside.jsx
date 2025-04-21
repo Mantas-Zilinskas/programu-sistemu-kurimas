@@ -38,17 +38,24 @@ const DiscussionInside = () => {
   return (
     <>
       <div className={styles.discussionContainer}>
-        <section className={styles.discussionCard}>
-          {(loading)
-            ? (
-                <>
+        {(loading)
+          ? (
+              <section className={styles.discussionCard}>
                 <Skeleton variant="text" className={styles.skeletonTitle} />
                 <Skeleton variant="text" className={styles.skeletonBody} />
                 <Skeleton variant="text" className={styles.skeletonBody} />
                 <Skeleton variant="text" className={styles.skeletonBody} />
-                </>
-            ) : (
-              <>
+              </section>
+          ) : (
+            <>
+              <div className={styles.tags}>
+                {discussion.tags.map((tag, index) => (
+                  <span key={index} className={styles.tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <section className={styles.discussionCard}>
                 <div style={{display: 'flex'}}>
                   <div className={styles.marginRight}>
                     <DiscussionWidget count={discussion.likes} discussionId={id} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
@@ -81,10 +88,10 @@ const DiscussionInside = () => {
                 ) : (
                   null
                 )}
-              </>
-            )
-          }
-        </section>
+              </section>
+            </>
+          )
+        }
         <p className={styles.negativeTopMargin}>Comments:</p>
         <section>
           {loading || discussion.comments.map((comment) => (

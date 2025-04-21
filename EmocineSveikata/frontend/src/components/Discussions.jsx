@@ -9,10 +9,6 @@ const Discussions = () => {
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
   const navigate = useNavigate();
 
-  const handleNavigateToDiscussion = (id) => {
-    navigate(`/discussions/${id}`);
-  }
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -62,7 +58,7 @@ const Discussions = () => {
       </div>
 
       {discussions.map((discussion) => (
-        <div key={discussion.id} className="discussion-card" onClick={() => handleNavigateToDiscussion(discussion.id)}>
+        <div key={discussion.id} className="discussion-card" onClick={() => navigate(`/discussions/${discussion.id}`)}>
           <div className="discussion-header">
             <h2 className="discussion-title">{discussion.title}</h2>
             <div className="discussion-tags">
