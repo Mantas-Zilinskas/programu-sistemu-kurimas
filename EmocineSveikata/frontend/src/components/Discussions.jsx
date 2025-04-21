@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDiscussions } from '../contexts/DiscussionContext';
+import { useNavigate } from 'react-router-dom';
 import './Discussions.css';
 
 const Discussions = () => {
   const { discussions, tagsArray, selectedTag, setSelectedTag, isPopular, setIsPopular, loading, error } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
+  const navigate = useNavigate();
+
+  const handleNavigateToDiscussion = (id) => {
+    navigate(`/discussions/${id}`);
+  }
 
   if (loading) {
     return (
@@ -56,7 +62,7 @@ const Discussions = () => {
       </div>
 
       {discussions.map((discussion) => (
-        <div key={discussion.id} className="discussion-card">
+        <div key={discussion.id} className="discussion-card" onClick={() => handleNavigateToDiscussion(discussion.id)}>
           <div className="discussion-header">
             <h2 className="discussion-title">{discussion.title}</h2>
             <div className="discussion-tags">

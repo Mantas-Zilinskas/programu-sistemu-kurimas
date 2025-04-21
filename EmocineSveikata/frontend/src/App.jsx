@@ -16,7 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/discussions" element={<Discussions />} />
-            <Route path="/discussion/:id" element={<DiscussionInside />} />
+            <Route path="/discussions/:id" element={<DiscussionInside />} />
             <Route path="/discussions/new" element={<DiscussionsNew />} />
           </Routes>
         </main>
