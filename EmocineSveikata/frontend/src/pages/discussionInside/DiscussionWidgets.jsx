@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CommentIcon from '@mui/icons-material/Comment';
-import styles from './DiscussionWidgets.module.css'
+import './DiscussionWidgets.css'
 import Skeleton from '@mui/material/Skeleton';
 
 const DiscussionWidget = ({count, discussionId, handleReply}) => {
@@ -17,10 +17,10 @@ const DiscussionWidget = ({count, discussionId, handleReply}) => {
   } 
 
   return (
-    <div className={styles.container}>
+    <div className='container'>
       <>{likes}</>
-      < FavoriteIcon onClick={handleLike} className={(liked) ? styles.likeButtonActive : styles.likeButton} />
-      < CommentIcon onClick={handleReply} className={styles.commentButton} />
+      < FavoriteIcon onClick={handleLike} className={(liked) ? 'like-button-active' : 'like-button'} />
+      < CommentIcon onClick={handleReply} className='comment-button'/>
     </div>     
   )
 }
