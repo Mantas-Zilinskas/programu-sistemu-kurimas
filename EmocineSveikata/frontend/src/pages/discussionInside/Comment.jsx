@@ -4,8 +4,7 @@ import { TextField, Divider, Button } from '@mui/material';
 import { replyToComment } from '../../api/commentApi.js';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import commentStyles from './Comment.module.css';
-import styles from './DiscussionInside.module.css';
+import './Comment.css';
 
 const Comment = ({comment, discussionId}) => {
 
@@ -32,17 +31,17 @@ const Comment = ({comment, discussionId}) => {
     if (commentData.replies.length == 0) {
       return null
     } else if (repliesOpen) {
-      return (<KeyboardArrowUpIcon onClick={handleExpandReplies} className={commentStyles.pointerIcon} />)
+      return (<KeyboardArrowUpIcon onClick={handleExpandReplies} className='pointer-icon' />)
     } else {
-      return (<KeyboardArrowDownIcon onClick={handleExpandReplies} className={commentStyles.pointerIcon} />)
+      return (<KeyboardArrowDownIcon onClick={handleExpandReplies} className='pointer-icon' />)
     }
   }
 
   return (
     <>
-      <div className={commentStyles.commentCard}>
+      <div className='comment-card'>
         <div style={{ display: 'flex' }}>
-          <div className={styles.marginRight}>
+          <div className='margin-right'>
             <CommentWidget
               count={commentData.likes}
               CommentId={commentData.likes}
@@ -53,7 +52,7 @@ const Comment = ({comment, discussionId}) => {
         </div>
           {newReplyOpen ? (
           <>
-            <Divider className={commentStyles.horizontalDivider} />
+            <Divider className='horizontal-divider' />
             <TextField
               label="Reply"
               multiline
@@ -77,7 +76,7 @@ const Comment = ({comment, discussionId}) => {
         {repliesOpen ?
           commentData.replies.map((reply) => ( 
             <>
-              <Comment key={reply.id} comment={reply} discussionId={discussionId} />
+              <Comment comment={reply} discussionId={discussionId} />
             </>
           ))
           :
