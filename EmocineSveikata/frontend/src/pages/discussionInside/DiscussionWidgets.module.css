@@ -1,27 +1,27 @@
-.like-button-active {
+.likeButtonActive {
   color: #d70a0a;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 }
 
-.like-button {
+.likeButton {
   color: grey;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 }
 
-.reply-button {
+.commentButton {
   color: grey;
 }
 
-.like-button-active,
-.like-button,
-.reply-button {
+.likeButtonActive,
+.likeButton,
+.commentButton {
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
 }
 
-.like-button-active:hover,
-.like-button:hover,
-.reply-button:hover {
+.likeButtonActive:hover,
+.likeButton:hover,
+.commentButton:hover {
   transform: scale(1.2);
 }
 

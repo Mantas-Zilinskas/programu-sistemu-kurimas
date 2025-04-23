@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ReplyIcon from '@mui/icons-material/Reply';
-import './CommentWidget.css'
+import styles from'./CommentWidget.module.css'
 
 const CommentWidget = ({ count, CommentId, handleReply, renderFunction = ()=>null}) => {
 
@@ -17,10 +17,10 @@ const CommentWidget = ({ count, CommentId, handleReply, renderFunction = ()=>nul
 
   return (
     <>
-      <div className='container'>
+      <div className={styles.container}>
         <>{likes}</>
-        <FavoriteIcon onClick={handleLike} className={(liked) ? 'like-button-active' : 'like-button'} />
-        <ReplyIcon className='reply-button' onClick={handleReply} />
+        <FavoriteIcon onClick={handleLike} className={(liked) ? styles.likeButtonActive : styles.likeButton} />
+        <ReplyIcon className={styles.replyButton} onClick={handleReply} />
       </div>
       {renderFunction()}
     </>
