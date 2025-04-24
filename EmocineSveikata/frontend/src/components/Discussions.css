@@ -121,22 +121,22 @@
 }
 
 .new-discussion-button {
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  align-self: flex-start;
-  margin-top: 8px;
-  transition: background-color 0.3s;
+    background-color: #4a4e69;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    align-self: flex-start;
+    margin-top: 8px;
+    transition: background-color 0.3s;
 }
 
-.new-discussion-button:hover {
-  background-color: #1565c0;
-}
+    .new-discussion-button:hover {
+        background-color: #9a8c98;
+    }
 
 .error-message {
   color: #d32f2f;

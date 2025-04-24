@@ -1,0 +1,53 @@
+.specialist-profile-page {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+    .specialist-profile-page h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .specialist-profile-page form {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .specialist-profile-page form div {
+            margin-bottom: 15px;
+        }
+
+    .specialist-profile-page label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .specialist-profile-page input, .specialist-profile-page textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .specialist-profile-page button {
+        padding: 10px 20px;
+        background-color: #4a4e69;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .specialist-profile-page button:hover {
+            background-color: #9a8c98;
+        }
+
+    .specialist-profile-page img {
+        margin-top: 10px;
+    }
