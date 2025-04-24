@@ -1,9 +1,19 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { logout } from '../api/authApi';
 import './Navbar.css';
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, setCurrentUser } = useAuth();
+  
+  const handleLogout = () => {
+    logout();
+    setCurrentUser(null);
+    navigate('/');
+  };
   
   return (
     <nav className="navbar">
@@ -24,6 +34,28 @@ const Navbar = () => {
           >
             Diskusijos
           </Link>
+        </div>
+        <div className="navbar-auth">
+          {currentUser && currentUser.user ? (
+            <>
+              <span className="navbar-user">
+                <span className="username">{currentUser.user.username}</span>
+                <span className="role-badge">{currentUser.user.role}</span>
+              </span>
+              <button onClick={handleLogout} className="navbar-button logout-button">
+                Atsijungti
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="navbar-button login-button">
+                Prisijungti
+              </Link>
+              <Link to="/register" className="navbar-button register-button">
+                Registruotis
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
