@@ -2,22 +2,27 @@ using Microsoft.EntityFrameworkCore;
 using EmocineSveikataServer.Data;
 using EmocineSveikataServer.Services.DiscussionService;
 using EmocineSveikataServer.Services.CommentService;
+using EmocineSveikataServer.Services.AuthService;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Repositories.CommentRepository;
+using EmocineSveikataServer.Repositories.UserRepository;
 using EmocineSveikataServer.Mapper;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS konfigūracija
+// CORS konfigūracija 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -25,7 +30,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Use strings when sending API enums instead of ids
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // naudojama API enums vietoj ids
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -38,34 +43,34 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
-// === Vartotojų autentifikacija (galimai prireiks) ===
-// 1. JWT autentifikacija
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuer = true,
-//             ValidateAudience = true,
-//             ValidateLifetime = true,
-//             ValidateIssuerSigningKey = true,
-//             ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//             ValidAudience = builder.Configuration["Jwt:Audience"],
-//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//         };
-//     });
-//
-// 2. Autorizacija
-// builder.Services.AddAuthorization(options =>
-// {
-//     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-//     options.AddPolicy("User", policy => policy.RequireRole("User"));
-// });
+
+// JWT autentifikacija
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+// Autorizacija rolėmis
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Naudotojas", policy => policy.RequireRole("Naudotojas"));
+    options.AddPolicy("Specialistas", policy => policy.RequireRole("Specialistas"));
+});
 
 // === Paleidžiam React frontend'ą ===
 try
@@ -134,7 +139,7 @@ catch (Exception ex)
 var app = builder.Build();
 
 // === Middleware ===
-// 1. CORS middleware
+// SVARBU: CORS middleware turi but callintas pries kitus middleware
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
@@ -185,8 +190,10 @@ app.Use(async (context, next) =>
     Console.WriteLine($"{context.Request.Method} {context.Request.Path} - {elapsed.TotalMilliseconds}ms");
 });
 
-app.UseHttpsRedirection();
+// Uzkomentuota HTTPS redirectionas kad išvengt CORS problemu per developmenta
+// app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
