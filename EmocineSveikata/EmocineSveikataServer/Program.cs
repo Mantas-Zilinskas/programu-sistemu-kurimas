@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using EmocineSveikataServer.Services.Meets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,8 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+
+builder.Services.AddScoped<GoogleMeetService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 // === Vartotojų autentifikacija (galimai prireiks) ===
