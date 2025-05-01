@@ -4,6 +4,7 @@ using EmocineSveikataServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmocineSveikataServer.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250428095257_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,74 +98,6 @@ namespace EmocineSveikataServer.Migrations
                     b.ToTable("Discussions");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfilePicture")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SelectedTopics")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SpecialistProfiles");
-                });
-
-            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistTimeSlot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BookedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsBooked")
-                        .HasColumnType("bit");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookedByUserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SpecialistTimeSlots");
-                });
-
             modelBuilder.Entity("EmocineSveikataServer.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -207,33 +142,6 @@ namespace EmocineSveikataServer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EmocineSveikataServer.Models.UserProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ProfilePicture")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SelectedTopics")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserProfiles");
-                });
-
             modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
                 {
                     b.HasOne("EmocineSveikataServer.Models.Comment", null)
@@ -254,45 +162,6 @@ namespace EmocineSveikataServer.Migrations
                     b.HasOne("EmocineSveikataServer.Models.User", null)
                         .WithMany("Discussions")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
-                {
-                    b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistTimeSlot", b =>
-                {
-                    b.HasOne("EmocineSveikataServer.Models.User", "BookedByUser")
-                        .WithMany()
-                        .HasForeignKey("BookedByUserId");
-
-                    b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BookedByUser");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EmocineSveikataServer.Models.UserProfile", b =>
-                {
-                    b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
