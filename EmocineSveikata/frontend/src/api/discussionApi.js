@@ -12,10 +12,11 @@ const fetchDiscussion = async (id) => {
     return response.data;
   } catch (error) {
     console.error('Error:', error);
-    return null;
+    return error;
   }
 }
 
+<<<<<<< HEAD
 const likeDiscussion = async (discussionId) => {
     const token = JSON.parse(localStorage.getItem("user"))?.token;
     if (!token) throw new Error('Unauthorized');
@@ -38,3 +39,16 @@ const likeDiscussion = async (discussionId) => {
   };
 
 export { fetchDiscussion, likeDiscussion };
+=======
+const updateDiscussion = async (discussion) => {
+  try {
+    const response = await axios.put(DiscussionBaseUrl + discussion.id, discussion);
+    return response;
+  } catch (error) {
+    console.error('Error:', error);
+    return error;
+  }
+}
+
+export { fetchDiscussion, updateDiscussion };
+>>>>>>> 41ac4f2 (PSK-40 can now eddit discussions)

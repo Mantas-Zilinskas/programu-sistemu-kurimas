@@ -1,0 +1,149 @@
+.new-discussion-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.new-discussion-title {
+  font-size: 2rem;
+}
+
+.new-discussion-form-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.new-discussion-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.tag-select-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-chip {
+  background-color: #e5e7eb;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+}
+
+.tag-select {
+  font-size: 16px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 200px;
+}
+
+.tag-select:focus {
+  border-color: #007bff;
+  background-color: #e9f0ff;
+  outline: none;
+}
+
+.tag-select:hover {
+  border-color: #007bff;
+  background-color: #f1f1f1;
+}
+
+.tag-select option {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  border: none;
+}
+
+.tag-select:active {
+  background-color: #e9f0ff;
+}
+
+.submit-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  align-self: flex-start;
+  transition: background-color 0.3s;
+}
+
+.add-tag-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover, .add-tag-button:hover {
+  background-color: #1565c0;
+}
+
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  margin-top: 32px;
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

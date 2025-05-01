@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Comment from './Comment'
 import styles from './DiscussionInside.module.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import { fetchDiscussion } from '../../api/discussionApi.js';
 import { postCommentOnDiscussion } from '../../api/commentApi.js'
 import DiscussionWidget from './DiscussionWidgets';
 import { TextField, Divider, Button, Skeleton } from '@mui/material';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const DiscussionInside = () => {
 
@@ -15,6 +18,8 @@ const DiscussionInside = () => {
   const [loading, setLoading] = useState(true);
   const [newCommentOpen, setNewCommentOpen] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async (id) => {
@@ -34,6 +39,19 @@ const DiscussionInside = () => {
     setNewCommentOpen(false);
     setDiscussion(newData);
   }
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleEdit = () => {
+    navigate(`/editDiscussion/${id}`);
+    setAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -56,6 +74,16 @@ const DiscussionInside = () => {
                 ))}
               </div>
               <section className={styles.discussionCard}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <MoreHorizIcon className={styles.moreButton} onClick={handleMenuOpen} />
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                  >
+                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                  </Menu>
+                </div>
                 <div style={{display: 'flex'}}>
                   <div className={styles.marginRight}>
                     <DiscussionWidget count={discussion.likes} discussionId={id} initialLiked={discussion.likedByUser} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
