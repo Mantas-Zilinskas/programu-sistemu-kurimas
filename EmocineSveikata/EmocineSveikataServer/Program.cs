@@ -6,6 +6,7 @@ using EmocineSveikataServer.Services.AuthService;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
+using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Mapper;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
@@ -44,6 +45,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<ISpecialistProfileRepository, SpecialistProfileRepository>();
+builder.Services.AddScoped<ISpecialistTimeSlotRepository, SpecialistTimeSlotRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();

@@ -13,6 +13,9 @@ namespace EmocineSveikataServer.Data
         public DbSet<Discussion> Discussions { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<SpecialistProfile> SpecialistProfiles { get; set; }
+        public DbSet<SpecialistTimeSlot> SpecialistTimeSlots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
