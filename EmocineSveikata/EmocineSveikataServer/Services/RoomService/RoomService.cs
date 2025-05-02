@@ -2,7 +2,6 @@
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
-using System.Diagnostics;
 
 namespace EmocineSveikataServer.Services.RoomService
 {
@@ -27,20 +26,36 @@ namespace EmocineSveikataServer.Services.RoomService
 
             List<RoomDto> roomList = [];
 
-            for(int i = 0; i < users.Count; ++i)
+            try
             {
-                RoomDto roomDto = new()
+                for(int i = 0; i < users.Count; ++i)
                 {
-                    Id = specialistTimeSlots[i].Id,
-                    SpecialistName = users[i].Username,
-                    Bio = specialistProfiles[i].Bio,
-                    ProfilePicture = specialistProfiles[i].ProfilePicture,
-                    Date = specialistTimeSlots[i].Date,
-                    StartTime = specialistTimeSlots[i].StartTime,
-                    EndTime = specialistTimeSlots[i].EndTime
+                    RoomDto roomDto = new()
+                    {
+                        Id = specialistTimeSlots[i].Id,
+                        SpecialistName = users[i].Username,
+                        Bio = specialistProfiles[i].Bio,
+                        ProfilePicture = specialistProfiles[i].ProfilePicture,
+                        Date = specialistTimeSlots[i].Date,
+                        StartTime = specialistTimeSlots[i].StartTime,
+                        EndTime = specialistTimeSlots[i].EndTime
+                    };
+
+                    roomList.Add(roomDto);
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                RoomDto errorRoomDto = new()
+                {
+                    Id = 0,
+                    SpecialistName = "SpecialistProfile bug",
+                    Bio = "Bug due to SpecialistProfile not existing for a SpecialistTimeSlot, click `Išsaugoti` in the user settings (`SpecialistProfile.jsx`, line 42)"
                 };
 
-                roomList.Add(roomDto);
+                return [errorRoomDto];
             }
 
             return roomList;
