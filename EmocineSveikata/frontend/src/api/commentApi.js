@@ -6,9 +6,9 @@ const replyToComment = async (discussionId, commentId, content) => {
   try {
     const response = await axios.post(DiscussionBaseUrl + discussionId + '/comments/' + commentId + '/reply',
     {content: content},
-	{ headers: 
-	  { Authorization: `Bearer ${token}`}
-	});
+    { headers: 
+      { Authorization: `Bearer ${token}`}
+    });
     return response.data;
   } catch (error) {
     console.error('Error:', error);
@@ -21,9 +21,9 @@ const postCommentOnDiscussion = async (discussionId, content) => {
   try {
     const response = await axios.post(DiscussionBaseUrl + discussionId + '/comments',
       { content: content },
-	  { headers: 
-		{ Authorization: `Bearer ${token}`}
-	  });
+      { headers: 
+        { Authorization: `Bearer ${token}`}
+      });
     return response.data;
   } catch (error) {
     console.error('Error:', error);
@@ -31,4 +31,25 @@ const postCommentOnDiscussion = async (discussionId, content) => {
   }
 }
 
-export { replyToComment, postCommentOnDiscussion };
+const likeComment = async (discussionId, commentId) => {
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) throw new Error('Unauthorized');
+  
+    try {
+      const response = await axios.post(
+        `${DiscussionBaseUrl}${discussionId}/comments/${commentId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error liking comment:', error);
+      throw error;
+    }
+  };
+  
+export { replyToComment, postCommentOnDiscussion, likeComment};

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ReplyIcon from '@mui/icons-material/Reply';
+import { likeComment } from '../../api/commentApi';
 import styles from './CommentWidget.module.css';
 
 const CommentWidget = ({ count, DiscussionId, CommentId, handleReply, renderFunction = () => null, initialLiked = false,
@@ -13,32 +14,12 @@ const CommentWidget = ({ count, DiscussionId, CommentId, handleReply, renderFunc
   }, [initialLiked]);
 
   const handleLike = async () => {
-    const token = JSON.parse(localStorage.getItem("user"))?.token;
-
-    if (!token) {
-      alert("You must be logged in to like a comment.");
-      return;
-    }
-
     try {
-      const response = await fetch(`/api/discussions/${DiscussionId}/comments/${CommentId}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to like comment');
-      }
-
-      const data = await response.json();
+      const data = await likeComment(DiscussionId, CommentId);
       setLikes(data.likes);
       setLiked(data.likedByUser);
-
     } catch (error) {
-      console.error('Like error:', error);
+      alert("You must be logged in to like a comment.");
     }
   };
 

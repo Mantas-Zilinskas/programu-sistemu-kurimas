@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CommentIcon from '@mui/icons-material/Comment';
 import styles from './DiscussionWidgets.module.css'
+import { likeDiscussion } from '../../api/discussionApi';
 import Skeleton from '@mui/material/Skeleton';
 
 const DiscussionWidget = ({ count, discussionId, handleReply, initialLiked }) => {
-	
+    
     const [likes, setLikes] = useState(count);
     const [liked, setLiked] = useState(initialLiked);
 
@@ -14,36 +15,14 @@ const DiscussionWidget = ({ count, discussionId, handleReply, initialLiked }) =>
     }, [initialLiked]);
   
     const handleLike = async () => {
-        const token = JSON.parse(localStorage.getItem("user"))?.token;
-      
-        if (!token) {
-          alert("You must be logged in to like a discussion.");
-          return;
-        }
-      
         try {
-          const response = await fetch(`/api/discussions/${discussionId}/like`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            }
-          });
-      
-          if (!response.ok) {
-            throw new Error('Failed to like discussion');
-          }
-      
-          const data = await response.json();
-      
+          const data = await likeDiscussion(discussionId);
           setLikes(data.likes);
           setLiked(data.likedByUser);
-      
         } catch (error) {
-          console.error('Like error:', error);
+          alert("You must be logged in to like a discussion.");
         }
       };
-      
   
     return (
       <div className={styles.container}>

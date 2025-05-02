@@ -16,4 +16,25 @@ const fetchDiscussion = async (id) => {
   }
 }
 
-export { fetchDiscussion };
+const likeDiscussion = async (discussionId) => {
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) throw new Error('Unauthorized');
+  
+    try {
+      const response = await axios.post(
+        `${DiscussionBaseUrl}${discussionId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error liking discussion:', error);
+      throw error;
+    }
+  };
+
+export { fetchDiscussion, likeDiscussion };
