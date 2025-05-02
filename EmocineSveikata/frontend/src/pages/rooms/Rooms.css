@@ -14,29 +14,29 @@
 }
 
 .room-card {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  transition: background-color 0.5s ease, box-shadow 0.5s ease;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: background-color 0.5s ease, box-shadow 0.5s ease;
 }
 
 .room-card:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .room-creator-name {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 12px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 12px;
 }
 
 .profile-picture {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     overflow: hidden;
     border: 1px solid #ccc;
@@ -50,13 +50,13 @@
 }
 
 .room-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-.room-bio {
+.room-creator-bio {
   color: #555;
   line-height: 1.5;
 }
