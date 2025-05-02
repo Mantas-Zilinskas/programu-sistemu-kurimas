@@ -28,7 +28,7 @@ namespace EmocineSveikataServer.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
         // Navigation properties
-        public virtual ICollection<Comment>? Comments { get; set; }
-        public virtual ICollection<Discussion>? Discussions { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual ICollection<Discussion> Discussions { get; set; } = new List<Discussion>();
     }
 }

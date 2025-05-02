@@ -4,25 +4,57 @@ import CommentIcon from '@mui/icons-material/Comment';
 import styles from './DiscussionWidgets.module.css'
 import Skeleton from '@mui/material/Skeleton';
 
-const DiscussionWidget = ({count, discussionId, handleReply}) => {
+const DiscussionWidget = ({ count, discussionId, handleReply, initialLiked }) => {
+	
+    const [likes, setLikes] = useState(count);
+    const [liked, setLiked] = useState(initialLiked);
+
+    useEffect(() => {
+      setLiked(initialLiked);
+    }, [initialLiked]);
   
-  const [likes, setLikes] = useState(count);
-  const [liked, setLiked] = useState(false);
-
-  // TO DO: associate with account when they get implemented
-  const handleLike = () => {
-    const likeState = liked;
-    setLiked(!likeState);
-    setLikes(likeState ? likes - 1 : likes + 1)
-  } 
-
-  return (
-    <div className={styles.container}>
-      <>{likes}</>
-      < FavoriteIcon onClick={handleLike} className={(liked) ? styles.likeButtonActive : styles.likeButton} />
-      < CommentIcon onClick={handleReply} className={styles.commentButton} />
-    </div>     
-  )
-}
+    const handleLike = async () => {
+        const token = JSON.parse(localStorage.getItem("user"))?.token;
+      
+        if (!token) {
+          alert("You must be logged in to like a discussion.");
+          return;
+        }
+      
+        try {
+          const response = await fetch(`/api/discussions/${discussionId}/like`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            }
+          });
+      
+          if (!response.ok) {
+            throw new Error('Failed to like discussion');
+          }
+      
+          const data = await response.json();
+      
+          setLikes(data.likes);
+          setLiked(data.likedByUser);
+      
+        } catch (error) {
+          console.error('Like error:', error);
+        }
+      };
+      
+  
+    return (
+      <div className={styles.container}>
+        <>{likes}</>
+        <FavoriteIcon
+          onClick={handleLike}
+          className={liked ? styles.likeButtonActive : styles.likeButton}
+        />
+        <CommentIcon onClick={handleReply} className={styles.commentButton} />
+      </div>
+    );
+  };  
 
 export default DiscussionWidget;

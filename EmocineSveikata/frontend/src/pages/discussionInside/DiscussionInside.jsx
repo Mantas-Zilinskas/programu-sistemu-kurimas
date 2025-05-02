@@ -58,7 +58,7 @@ const DiscussionInside = () => {
               <section className={styles.discussionCard}>
                 <div style={{display: 'flex'}}>
                   <div className={styles.marginRight}>
-                    <DiscussionWidget count={discussion.likes} discussionId={id} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
+                    <DiscussionWidget count={discussion.likes} discussionId={id} initialLiked={discussion.likedByUser} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
                   </div>
                   <div className={styles.content}>
                     <h3 className={styles.discussionTitle}>{discussion.title}</h3>

@@ -2,9 +2,13 @@ import { DiscussionBaseUrl } from './baseUrls'
 import axios from 'axios';
 
 const replyToComment = async (discussionId, commentId, content) => {
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
   try {
     const response = await axios.post(DiscussionBaseUrl + discussionId + '/comments/' + commentId + '/reply',
-    {content: content});
+    {content: content},
+	{ headers: 
+	  { Authorization: `Bearer ${token}`}
+	});
     return response.data;
   } catch (error) {
     console.error('Error:', error);
@@ -13,9 +17,13 @@ const replyToComment = async (discussionId, commentId, content) => {
 }
 
 const postCommentOnDiscussion = async (discussionId, content) => {
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
   try {
     const response = await axios.post(DiscussionBaseUrl + discussionId + '/comments',
-      { content: content });
+      { content: content },
+	  { headers: 
+		{ Authorization: `Bearer ${token}`}
+	  });
     return response.data;
   } catch (error) {
     console.error('Error:', error);
