@@ -83,11 +83,9 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			
 			if (userId is not null)
 			{
-				Console.WriteLine("UserId is not null");
 				_mapped.LikedByUser = discussion.LikedBy.Contains((int)userId);
 				return FixLikes(_mapped, discussion, (int)userId);
 			}
-			Console.WriteLine("UserId is sadly null");
 			return _mapped;
 		}
 
