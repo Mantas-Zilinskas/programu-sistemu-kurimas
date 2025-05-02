@@ -8,6 +8,7 @@ import DiscussionsNew from './components/DiscussionsNew';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider } from './contexts/AuthContext';
+import PositiveMessages from './components/PositiveMessages';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <Router>
         <div className="app-container">
           <Navbar />
+          <PositiveMessages />
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
