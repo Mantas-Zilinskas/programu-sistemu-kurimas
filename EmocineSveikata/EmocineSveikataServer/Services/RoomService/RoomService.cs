@@ -5,21 +5,21 @@ using EmocineSveikataServer.Repositories.UserRepository;
 
 namespace EmocineSveikataServer.Services.RoomService
 {
-	public class RoomService : IRoomService
+    public class RoomService : IRoomService
     {
         ISpecialistTimeSlotRepository _specialistTimeSlotRepository;
         IUserRepository _userRepository;
         ISpecialistProfileRepository _specialistProfileRepository;
 
-		public RoomService(ISpecialistTimeSlotRepository specialistTimeSlotRepository, IUserRepository userRepository, ISpecialistProfileRepository specialistProfileRepository)
-		{
+        public RoomService(ISpecialistTimeSlotRepository specialistTimeSlotRepository, IUserRepository userRepository, ISpecialistProfileRepository specialistProfileRepository)
+        {
             _specialistTimeSlotRepository = specialistTimeSlotRepository;
             _userRepository = userRepository;
             _specialistProfileRepository = specialistProfileRepository;
         }
 
         public async Task<List<RoomDto>> GetAllCurrentRooms()
-		{
+        {
             List<SpecialistTimeSlot> specialistTimeSlots = await _specialistTimeSlotRepository.GetCurrentlyAvailableTimeSlots();
             List<User> users = await _userRepository.GetUsersByIds(specialistTimeSlots.Select(sts => sts.UserId).ToList());
             List<SpecialistProfile> specialistProfiles = await _specialistProfileRepository.GetSpecialistProfilesByUserIds(users.Select(s => s.Id).ToList());
@@ -59,6 +59,6 @@ namespace EmocineSveikataServer.Services.RoomService
             }
 
             return roomList;
-		}
+        }
     }
 }

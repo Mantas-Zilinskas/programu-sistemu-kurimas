@@ -2,7 +2,7 @@
 
 namespace EmocineSveikataServer.Services.RoomService
 {
-	public interface IRoomService
+    public interface IRoomService
     {
         Task<List<RoomDto>> GetAllCurrentRooms();
     }
