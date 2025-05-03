@@ -7,6 +7,7 @@ namespace EmocineSveikataServer.Repositories.UserRepository
         Task<User?> GetUserByUsername(string username);
         Task<User?> GetUserByEmail(string email);
         Task<User?> GetUserById(int id);
+        Task<List<User>> GetUsersByIds(List<int> ids);
         Task<IEnumerable<User>> GetAllUsers();
         Task<User> CreateUser(User user);
         Task<bool> UserExists(string username);

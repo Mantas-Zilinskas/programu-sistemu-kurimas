@@ -34,6 +34,12 @@ const Navbar = () => {
                     >
                         Diskusijos
                     </Link>
+                    <Link
+                        to="/rooms" 
+                        className={`navbar-link ${location.pathname === '/rooms' ? 'navbar-link-active' : ''}`}
+                    >
+                        Kambariai
+                   </Link>
                 </div>
                 <div className="navbar-auth">
                     {currentUser && currentUser.user ? (

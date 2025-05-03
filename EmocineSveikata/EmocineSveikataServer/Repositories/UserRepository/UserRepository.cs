@@ -35,6 +35,20 @@ namespace EmocineSveikataServer.Repositories.UserRepository
             return await _context.Users.FindAsync(id);
         }
 
+        public async Task<List<User>> GetUsersByIds(List<int> ids) // If there are duplicates in `ids`, duplicate users will be returned (this is on purpose)
+        {
+            var usersDict = await _context.Users
+                .Where(user => ids.Contains(user.Id))
+                .ToDictionaryAsync(u => u.Id);
+
+            var result = ids
+                .Where(id => usersDict.ContainsKey(id))
+                .Select(id => usersDict[id])
+                .ToList();
+
+            return result;
+        }
+
         public async Task<User?> GetUserByUsername(string username)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());

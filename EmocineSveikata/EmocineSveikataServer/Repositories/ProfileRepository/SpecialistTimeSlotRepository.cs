@@ -13,6 +13,22 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
             _context = context;
         }
 
+        public async Task<List<SpecialistTimeSlot>> GetCurrentlyAvailableTimeSlots()
+        {
+            DateTime currentDateTime = DateTime.Now;
+            DateTime currentDate = currentDateTime.Date;
+            TimeSpan currentTime = currentDateTime.TimeOfDay;
+
+            return await _context.SpecialistTimeSlots
+                .Where(ts =>
+                    ts.Date > currentDate || // Future dates
+                    (ts.Date == currentDate && ts.EndTime > currentTime) // Today and not yet ended
+                )
+                .OrderBy(ts => ts.Date)
+                .ThenBy(ts => ts.StartTime)
+                .ToListAsync();
+        }
+
         public async Task<List<SpecialistTimeSlot>> GetTimeSlotsBySpecialistId(int specialistId)
         {
             return await _context.SpecialistTimeSlots
