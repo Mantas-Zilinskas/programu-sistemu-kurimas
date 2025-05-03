@@ -10,10 +10,15 @@ namespace EmocineSveikataServer.Mapper
 	{
 		public MapperProfile()
 		{
-			CreateMap<Discussion, DiscussionDto>();
-			CreateMap<DiscussionCreateDto, Discussion>();
+			CreateMap<Discussion, DiscussionDto>()
+				.ForMember(dest => dest.AuthorId,
+     opt => opt.MapFrom(src => src.User != null ? src.User.Id : 0))
+    .ForMember(dest => dest.AuthorName,
+				 opt => opt.MapFrom(src => src.User != null ? src.User.Username : null))
+				.ForMember(dest => dest.AuthorPicture, 
+				 opt => opt.MapFrom(src => src.User != null ? src.User.UserProfile : null));
+   CreateMap<DiscussionCreateDto, Discussion>();
 			CreateMap<DiscussionUpdateDto, Discussion>();
-
 			CreateMap<Comment, CommentDto>()
 				.ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.Replies));
 			CreateMap<CommentCreateDto, Comment>();

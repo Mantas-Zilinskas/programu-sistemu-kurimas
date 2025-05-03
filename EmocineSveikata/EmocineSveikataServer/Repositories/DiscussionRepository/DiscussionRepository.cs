@@ -1,7 +1,11 @@
 ﻿using EmocineSveikataServer.Data;
+using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Enums;
+using EmocineSveikataServer.Migrations;
 using EmocineSveikataServer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Core.Types;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EmocineSveikataServer.Repositories.DiscussionRepository
@@ -31,8 +35,31 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		{
 			return await _context.Discussions.OrderByDescending(d => d.Id).ToListAsync();
 		}
+  public async Task<IEnumerable<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+  {
+				var query = _context.Discussions
+					.OrderByDescending(d => d.Id)
+					.Where(d => !d.IsDeleted);
 
-		public async Task<Discussion> GetDiscussionAsync(int id)
+    if (tag != null)
+    {
+        query = query.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
+    }
+
+    if (isPopular)
+    {
+        query = query.OrderByDescending(d => d.Likes);
+    }
+
+				query = query
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
+				.Include(d => d.User)
+    .ThenInclude(u => u.UserProfile);
+
+    return await query.ToListAsync();
+  }
+    public async Task<Discussion> GetDiscussionAsync(int id)
 		{
 			var discussion = await _context.Discussions
 				.Include(d => d.Comments)

@@ -14,5 +14,6 @@ namespace EmocineSveikataServer.Models
         public bool IsDeleted { get; set; }
         public List<DiscussionTagEnum> Tags { get; set; } = new List<DiscussionTagEnum>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual User? User { get; set; }
     }
 }

@@ -247,16 +247,20 @@ namespace EmocineSveikataServer.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("DiscussionId");
 
-                    b.HasOne("EmocineSveikataServer.Models.User", null)
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.Discussion", b =>
                 {
-                    b.HasOne("EmocineSveikataServer.Models.User", null)
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
                         .WithMany("Discussions")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>

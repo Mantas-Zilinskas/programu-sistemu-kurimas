@@ -12,157 +12,140 @@ using System.Xml.Linq;
 
 namespace EmocineSveikataServer.Services.DiscussionService
 {
-	public class DiscussionService : IDiscussionService
-	{
-		private readonly ICommentService _commentService;
-		private readonly IDiscussionRepository _repository;
-		private readonly IUserRepository _userRepository;
-		private readonly IMapper _mapper;
-		public DiscussionService(IDiscussionRepository repository, ICommentService commentService,
-			IUserRepository userRepository, IMapper mapper)
-		{
-			_repository = repository;
-			_commentService = commentService;
-			_userRepository = userRepository;
-			_mapper = mapper;
-		}
+  public class DiscussionService : IDiscussionService
+  {
+    private readonly ICommentService _commentService;
+    private readonly IDiscussionRepository _repository;
+    private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
+    public DiscussionService(IDiscussionRepository repository, ICommentService commentService,
+     IUserRepository userRepository, IMapper mapper)
+    {
+      _repository = repository;
+      _commentService = commentService;
+      _userRepository = userRepository;
+      _mapper = mapper;
+    }
 
-		public async Task<DiscussionDto> CreateDiscussionAsync(DiscussionCreateDto discussionDto)
-		{
-			var discussion = _mapper.Map<Discussion>(discussionDto);
-			var user = await _userRepository.GetUserById(discussionDto.CreatorUserId);
-			user.Discussions.Add(discussion);
-			await _repository.AddDiscussionAsync(discussion);
+    public async Task<DiscussionDto> CreateDiscussionAsync(DiscussionCreateDto discussionDto)
+    {
+      var discussion = _mapper.Map<Discussion>(discussionDto);
+      var user = await _userRepository.GetUserById(discussionDto.CreatorUserId);
+      user.Discussions.Add(discussion);
+      await _repository.AddDiscussionAsync(discussion);
 
-			return _mapper.Map<DiscussionDto>(discussion);
-		}
+      return _mapper.Map<DiscussionDto>(discussion);
+    }
 
-		public async Task DeleteDiscussionAsync(int discussionId)
-		{
-			await _repository.DeleteDiscussionAsync(discussionId);
-		}
+    public async Task DeleteDiscussionAsync(int discussionId)
+    {
+      await _repository.DeleteDiscussionAsync(discussionId);
+    }
 
-		public async Task<List<DiscussionDto>> GetAllDiscussionsAsync()
-		{
-			var allDiscussions = (await _repository.GetAllDiscussionsAsync()).ToList();
-			return _mapper.Map<List<DiscussionDto>>(allDiscussions);
-		}
+    public async Task<List<DiscussionDto>> GetAllDiscussionsAsync()
+    {
+      var allDiscussions = (await _repository.GetAllDiscussionsAsync()).ToList();
+      return _mapper.Map<List<DiscussionDto>>(allDiscussions);
+    }
 
-		public List<string> GetAllTags()
-		{
-			return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
-		}
+    public List<string> GetAllTags()
+    {
+      return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
+    }
 
-		public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
-		{
-			var discussions = (await _repository.GetAllDiscussionsAsync())
-				.Where(d => !d.IsDeleted);
+    public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+    {
+      var paginatedDiscussions = await _repository.GetPagedDiscussionsAsync(page, pageSize, tag, isPopular);
+      return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
+    }
 
-			if(tag != null)
-			{
-				discussions = discussions.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
-			}
+    public async Task<DiscussionDto> GetDiscussionAsync(int discussionId, int? userId)
+    {
+      var discussion = await _repository.GetDiscussionAsync(discussionId);
+      FixReplies(discussion);
+      var _mapped = _mapper.Map<DiscussionDto>(discussion);
 
-			if(isPopular)
-			{
-				discussions = discussions.OrderByDescending(d => d.Likes);
-			}
+      if (userId is not null)
+      {
+        _mapped.LikedByUser = discussion.LikedBy.Contains((int)userId);
+        return FixLikes(_mapped, discussion, (int)userId);
+      }
+      return _mapped;
+    }
 
-			var paginatedDiscussions = discussions
-				.Skip((page - 1) * pageSize)
-				.Take(pageSize)
-				.ToList();
+    public async Task<DiscussionDto> UpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
+    {
+      var discussion = _mapper.Map<Discussion>(discussionDto);
+      var updated = await _repository.UpdateDiscussionAsync(discussionId, discussion);
+      FixReplies(updated);
+      return _mapper.Map<DiscussionDto>(updated);
+    }
+    public async Task<DiscussionDto> AddCommentToDiscussionAsync(int discussionId, CommentCreateDto commentDto)
+    {
+      var discussion = await _repository.GetDiscussionAsync(discussionId);
+      var user = await _userRepository.GetUserById(commentDto.CreatorUserId);
+      var comment = _mapper.Map<Comment>(commentDto);
+      discussion.Comments.Add(comment);
+      user.Comments.Add(comment);
+      FixReplies(discussion);
+      await _commentService.CreateCommentAsync(comment);
+      await _repository.SaveChangesAsync();
+      return _mapper.Map<DiscussionDto>(discussion);
+    }
+    public async Task<DiscussionDto> ChangeLikeStatusAsync(int discussionId, int userId)
+    {
+      var discussion = await _repository.GetDiscussionAsync(discussionId);
+      var user = await _userRepository.GetUserById(userId);
 
-			return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
-		}
-		public async Task<DiscussionDto> GetDiscussionAsync(int discussionId, int? userId)
-		{
-			var discussion = await _repository.GetDiscussionAsync(discussionId);
-			FixReplies(discussion);
-			var _mapped = _mapper.Map<DiscussionDto>(discussion);
-			
-			if (userId is not null)
-			{
-				_mapped.LikedByUser = discussion.LikedBy.Contains((int)userId);
-				return FixLikes(_mapped, discussion, (int)userId);
-			}
-			return _mapped;
-		}
+      if (!user.Discussions.Contains(discussion))
+      {
+        if (!discussion.LikedBy.Contains(userId))
+        {
+          discussion.LikedBy.Add(userId);
+        }
+        else
+        {
+          discussion.LikedBy.Remove(userId);
+        }
 
-		public async Task<DiscussionDto> UpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
-		{
-			var discussion = _mapper.Map<Discussion>(discussionDto);
-			var updated = await _repository.UpdateDiscussionAsync(discussionId, discussion);
-			FixReplies(updated);
-			return _mapper.Map<DiscussionDto>(updated);
-		}
-		public async Task<DiscussionDto> AddCommentToDiscussionAsync(int discussionId, CommentCreateDto commentDto)
-		{
-			var discussion = await _repository.GetDiscussionAsync(discussionId);
-			var user = await _userRepository.GetUserById(commentDto.CreatorUserId);
-			var comment = _mapper.Map<Comment>(commentDto);
-			discussion.Comments.Add(comment);
-			user.Comments.Add(comment);
-			FixReplies(discussion);
-			await _commentService.CreateCommentAsync(comment);
-			await _repository.SaveChangesAsync();
-			return _mapper.Map<DiscussionDto>(discussion);
-		}
-		public async Task<DiscussionDto> ChangeLikeStatusAsync(int discussionId, int userId)
-		{
-			var discussion = await _repository.GetDiscussionAsync(discussionId);
-			var user = await _userRepository.GetUserById(userId);
+        FixReplies(discussion);
+        await SaveChangesAsync();
+      }
 
-			if (!user.Discussions.Contains(discussion))
-			{
-				if (!discussion.LikedBy.Contains(userId))
-				{
-					discussion.LikedBy.Add(userId);
-				}
-				else
-				{
-					discussion.LikedBy.Remove(userId);
-				}
+      return FixLikes(_mapper.Map<DiscussionDto>(discussion), discussion, userId);
+    }
+    public async Task SaveChangesAsync()
+    {
+      await _repository.SaveChangesAsync();
+    }
 
-				FixReplies(discussion);
-				await SaveChangesAsync();
-			}
+    private Discussion FixReplies(Discussion discussion)
+    {
+      discussion.Comments.RemoveAll(c => c.CommentId != null);
+      _commentService.RemoveSoftDeletedReplies(discussion.Comments);
+      return discussion;
+    }
 
-			return FixLikes(_mapper.Map<DiscussionDto>(discussion), discussion, userId);
-		}
-		public async Task SaveChangesAsync()
-		{
-			await _repository.SaveChangesAsync();
-		}
+    private DiscussionDto FixLikes(DiscussionDto discussionDto, Discussion discussion, int userId)
+    {
+      List<CommentDto> FixedDtos(List<CommentDto> commentsDto, List<Comment> comments)
+      {
+        for (int i = 0; i < commentsDto.Count; i++)
+        {
+          if (comments[i].LikedBy.Contains(userId))
+            commentsDto[i].LikedByUser = true;
 
-		private Discussion FixReplies(Discussion discussion)
-		{
-			discussion.Comments.RemoveAll(c => c.CommentId != null);
-			_commentService.RemoveSoftDeletedReplies(discussion.Comments);
-			return discussion;
-		}
+          if (commentsDto[i].Replies is not null)
+            FixedDtos(commentsDto[i].Replies, comments[i].Replies);
+        }
+        return commentsDto;
+      }
 
-		private DiscussionDto FixLikes(DiscussionDto discussionDto, Discussion discussion, int userId)
-		{
-			List<CommentDto> FixedDtos(List<CommentDto> commentsDto, List<Comment> comments)
-			{
-				for (int i = 0; i < commentsDto.Count; i++)
-				{
-					if (comments[i].LikedBy.Contains(userId))
-						commentsDto[i].LikedByUser = true;
+      if (discussionDto.Comments is not null)
+        FixedDtos(discussionDto.Comments, discussion.Comments);
 
-					if (commentsDto[i].Replies is not null)
-						FixedDtos(commentsDto[i].Replies, comments[i].Replies);
-				}
-				return commentsDto;
-			}
-
-			if (discussionDto.Comments is not null)
-				FixedDtos(discussionDto.Comments, discussion.Comments);
-
-			discussionDto.LikedByUser = discussion.LikedBy.Contains(userId);
-			return discussionDto;
-		}
-
-	}
+      discussionDto.LikedByUser = discussion.LikedBy.Contains(userId);
+      return discussionDto;
+    }
+  }
 }
