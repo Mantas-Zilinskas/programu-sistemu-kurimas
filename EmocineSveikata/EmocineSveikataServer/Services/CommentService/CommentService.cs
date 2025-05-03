@@ -2,6 +2,7 @@
 using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.CommentRepository;
+using EmocineSveikataServer.Repositories.UserRepository;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EmocineSveikataServer.Services.CommentService
@@ -10,25 +11,45 @@ namespace EmocineSveikataServer.Services.CommentService
 	{
 		private readonly ICommentRepository _repository;
 		private readonly IMapper _mapper;
+		private readonly IUserRepository _userRepository;
 
-		public CommentService(ICommentRepository commentRepository, IMapper mapper)
+		public CommentService(ICommentRepository commentRepository, IUserRepository userRepository,
+			IMapper mapper)
 		{
 			_repository = commentRepository;
+			_userRepository = userRepository;
 			_mapper = mapper;
 		}
 
-		public async Task<CommentDto> LikeCommentAsync(int commentId)
+		public async Task<CommentDto> ChangeLikeStatusCommentAsync(int commentId, int userId)
 		{
 			var comment = await _repository.GetCommentAsync(commentId);
-			comment.Likes++;
+			var user = await _userRepository.GetUserById(userId);
+
+			if (!user.Comments.Contains(comment))
+			{
+				if (!comment.LikedBy.Contains(userId))
+				{
+					comment.LikedBy.Add(userId);
+				}
+				else
+				{
+					comment.LikedBy.Remove(userId);
+				}
+			}
+
 			await SaveChangesAsync();
-			return _mapper.Map<CommentDto>(comment);
+			var _mapped = _mapper.Map<CommentDto>(comment);
+			_mapped.LikedByUser = comment.LikedBy.Contains(userId);
+			return _mapped;
 		}
 
-		public async Task<CommentDto> ReplyToCommentAsync(int discussionId, int commentId, CommentCreateDto replyDto)
+		public async Task<CommentDto> ReplyToCommentAsync(int discussionId, int commentId, CommentCreateDto replyDto, int userId)
 		{
 			var comment = await _repository.GetCommentAsync(commentId);
 			var reply = _mapper.Map<Comment>(replyDto);
+			var user = await _userRepository.GetUserById(userId);
+			user.Comments.Add(reply);
 			reply.DiscussionId = discussionId;
 			comment.Replies.Add(reply);
 			await CreateCommentAsync(reply);
@@ -64,7 +85,6 @@ namespace EmocineSveikataServer.Services.CommentService
 
 		public List<Comment> RemoveSoftDeletedReplies(List<Comment> comments)
 		{
-			var newList = new List<Comment>();
 			foreach (var comment in comments)
 			{
 				if (!comment.Replies.IsNullOrEmpty())

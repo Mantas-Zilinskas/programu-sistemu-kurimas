@@ -3,7 +3,12 @@ import axios from 'axios';
 
 const fetchDiscussion = async (id) => {
   try {
-    const response = await axios.get(DiscussionBaseUrl + id);
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+
+    const response = await axios.get(DiscussionBaseUrl + id, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+
     return response.data;
   } catch (error) {
     console.error('Error:', error);
@@ -11,4 +16,25 @@ const fetchDiscussion = async (id) => {
   }
 }
 
-export { fetchDiscussion };
+const likeDiscussion = async (discussionId) => {
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) throw new Error('Unauthorized');
+  
+    try {
+      const response = await axios.post(
+        `${DiscussionBaseUrl}${discussionId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error liking discussion:', error);
+      throw error;
+    }
+  };
+
+export { fetchDiscussion, likeDiscussion };

@@ -45,7 +45,9 @@ const Comment = ({comment, discussionId}) => {
           <div className={styles.marginRight}>
             <CommentWidget
               count={commentData.likes}
-              CommentId={commentData.likes}
+			  DiscussionId={discussionId}
+              CommentId={commentData.id}
+			  initialLiked={commentData.likedByUser}
               handleReply={() => { setNewReplyOpen(!newReplyOpen) }}
               renderFunction={renderExpandRepliesButton} />
           </div>
