@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Dto.DiscussionDto;
+using EmocineSveikataServer.Dto.DiscussionDisplayDto;
 using EmocineSveikataServer.Enums;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
@@ -53,17 +54,17 @@ namespace EmocineSveikataServer.Services.DiscussionService
       return Enum.GetNames(typeof(DiscussionTagEnum)).ToList();
     }
 
-    public async Task<List<DiscussionDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+    public async Task<List<DiscussionDisplayDto>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
     {
       var paginatedDiscussions = await _repository.GetPagedDiscussionsAsync(page, pageSize, tag, isPopular);
-      return _mapper.Map<List<DiscussionDto>>(paginatedDiscussions);
+      return _mapper.Map<List<DiscussionDisplayDto>>(paginatedDiscussions);
     }
 
-    public async Task<DiscussionDto> GetDiscussionAsync(int discussionId, int? userId)
+    public async Task<DiscussionDisplayDto> GetDiscussionAsync(int discussionId, int? userId)
     {
-      var discussion = await _repository.GetDiscussionAsync(discussionId);
+      var discussion = await _repository.GetDiscussionWithRelationsAsync(discussionId);
       FixReplies(discussion);
-      var _mapped = _mapper.Map<DiscussionDto>(discussion);
+      var _mapped = _mapper.Map<DiscussionDisplayDto>(discussion);
 
       if (userId is not null)
       {
@@ -126,7 +127,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
       return discussion;
     }
 
-    private DiscussionDto FixLikes(DiscussionDto discussionDto, Discussion discussion, int userId)
+    private T FixLikes<T>(T discussionDto, Discussion discussion, int userId) where T : DiscussionDto
     {
       List<CommentDto> FixedDtos(List<CommentDto> commentsDto, List<Comment> comments)
       {

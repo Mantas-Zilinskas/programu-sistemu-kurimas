@@ -56,6 +56,13 @@ const DiscussionInside = () => {
                 ))}
               </div>
               <section className={styles.discussionCard}>
+                <div className={styles.discussionHeader}>
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <img className={styles.authorPicture} src={discussion.authorPicture}/>
+                    {discussion.authorName}
+                  </span>
+                  <p>thing</p>
+                </div>
                 <div style={{display: 'flex'}}>
                   <div className={styles.marginRight}>
                     <DiscussionWidget count={discussion.likes} discussionId={id} initialLiked={discussion.likedByUser} handleReply={() => setNewCommentOpen(!newCommentOpen)} />

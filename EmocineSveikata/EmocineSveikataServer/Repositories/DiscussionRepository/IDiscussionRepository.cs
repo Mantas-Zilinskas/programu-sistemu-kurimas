@@ -11,7 +11,7 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		Task AddDiscussionAsync(Discussion discussion);
 		Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion);
 		Task DeleteDiscussionAsync(int id);
-
-		Task SaveChangesAsync();
+		Task<Discussion> GetDiscussionWithRelationsAsync(int id);
+  Task SaveChangesAsync();
 	}
 }

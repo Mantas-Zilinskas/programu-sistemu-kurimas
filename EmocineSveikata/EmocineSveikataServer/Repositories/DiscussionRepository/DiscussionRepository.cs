@@ -59,11 +59,11 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 
     return await query.ToListAsync();
   }
-    public async Task<Discussion> GetDiscussionAsync(int id)
+  public async Task<Discussion> GetDiscussionAsync(int id)
 		{
 			var discussion = await _context.Discussions
-				.Include(d => d.Comments)
-				.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+			 .Include(d => d.Comments)
+			 .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 
 			if (discussion is null)
 			{
@@ -74,7 +74,26 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 			return discussion;
 		}
 
-		public async Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion)
+  public async Task<Discussion> GetDiscussionWithRelationsAsync(int id)
+  {
+    var discussion = await _context.Discussions
+      .Include(d => d.Comments)
+						.ThenInclude(c => c.User)
+						.ThenInclude(u => u.UserProfile)
+      .Include(d => d.User)
+      .ThenInclude(u => u.UserProfile)
+      .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+
+    if (discussion is null)
+    {
+      throw new KeyNotFoundException("Discussion not found");
+    }
+
+    discussion.Comments.RemoveAll(c => c.IsDeleted);
+    return discussion;
+  }
+
+  public async Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion)
 		{
 			var existing = await GetDiscussionAsync(id);
 			existing.Title = discussion.Title;
