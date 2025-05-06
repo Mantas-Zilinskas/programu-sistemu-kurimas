@@ -77,3 +77,12 @@
   justify-content: space-between;
   margin-bottom: 0.3em;
 }
+
+.moreButton {
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.moreButton:hover {
+  background-color: lightgrey;
+}

@@ -64,10 +64,6 @@ const Discussions = () => {
               <img className='author-picture' src={discussion.authorPicture} />
               {discussion.authorName}
             </span>
-            <p>thing</p>
-          </div>
-          <div className="discussion-header">
-            <h2 className="discussion-title">{discussion.title}</h2>
             <div className="discussion-tags">
               {discussion.tags.map((tag, index) => (
                 <span key={index} className="discussion-tag">
@@ -75,6 +71,9 @@ const Discussions = () => {
                 </span>
               ))}
             </div>
+          </div>
+          <div className="discussion-header">
+            <h2 className="discussion-title">{discussion.title}</h2>
           </div>
           <p className="discussion-content">
             {discussion.content}
