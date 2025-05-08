@@ -17,7 +17,7 @@ namespace EmocineSveikataServer.Controllers
 			_service = service;
 		}
 
-		[HttpGet("notifications")]
+		[HttpGet()]
 		public async Task<IActionResult> GetNotifications()
 		{
 			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -25,7 +25,7 @@ namespace EmocineSveikataServer.Controllers
 			return Ok(notifications);
 		}
 
-		[HttpPost("notifications/mark-read")]
+		[HttpPost("mark-read")]
 		public async Task<IActionResult> MarkAllAsRead()
 		{
 			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);

@@ -34,6 +34,12 @@ const Navbar = () => {
                     >
                         Diskusijos
                     </Link>
+					<Link
+                        to="/notifications"
+                        className={`navbar-link ${location.pathname === '/notifications' ? 'navbar-link-active' : ''}`}
+                    >
+                        Pranešimai
+                    </Link>
                 </div>
                 <div className="navbar-auth">
                     {currentUser && currentUser.user ? (

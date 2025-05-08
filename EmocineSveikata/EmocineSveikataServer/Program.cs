@@ -15,6 +15,8 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EmocineSveikataServer.Services.NotificationService;
+using EmocineSveikataServer.Repositories.NotificationRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<ISpecialistProfileRepository, SpecialistProfileRepository>();
@@ -51,6 +54,7 @@ builder.Services.AddScoped<ISpecialistTimeSlotRepository, SpecialistTimeSlotRepo
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));

@@ -12,6 +12,7 @@ import SpecialistProfile from './pages/SpecialistProfile';
 import UserProfile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import SpecialistCalendar from './pages/SpecialistCalendar';
+import Notifications from './pages/Notifications';
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
                             <Route path="/discussions/new" element={<DiscussionsNew />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
+							<Route path="/notifications" element={<Notifications />} />
 
                             {/* Protected Routes */}
                             <Route
