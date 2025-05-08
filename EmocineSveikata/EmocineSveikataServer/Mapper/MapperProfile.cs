@@ -22,6 +22,8 @@ namespace EmocineSveikataServer.Mapper
 			// User mappings
 			CreateMap<User, UserDto>();
 			CreateMap<RegisterDto, User>();
+
+			CreateMap<Notification, NotificationDto>();
 		}
 	}
 
