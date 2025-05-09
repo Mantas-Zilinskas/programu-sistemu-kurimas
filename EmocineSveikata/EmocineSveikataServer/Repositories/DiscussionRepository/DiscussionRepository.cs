@@ -35,31 +35,31 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		{
 			return await _context.Discussions.OrderByDescending(d => d.Id).ToListAsync();
 		}
-  public async Task<IEnumerable<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
-  {
-				var query = _context.Discussions
-					.OrderByDescending(d => d.Id)
-					.Where(d => !d.IsDeleted);
+		public async Task<IEnumerable<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+		{
+			var query = _context.Discussions
+			 .OrderByDescending(d => d.Id)
+			 .Where(d => !d.IsDeleted);
 
-    if (tag != null)
-    {
-        query = query.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
-    }
+			if (tag != null)
+			{
+				query = query.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
+			}
 
-    if (isPopular)
-    {
-        query = query.OrderByDescending(d => d.Likes);
-    }
+			if (isPopular)
+			{
+				query = query.OrderByDescending(d => d.Likes);
+			}
 
-				query = query
-				.Skip((page - 1) * pageSize)
-				.Take(pageSize)
-				.Include(d => d.User)
-    .ThenInclude(u => u.UserProfile);
+			query = query
+			.Skip((page - 1) * pageSize)
+			.Take(pageSize)
+			.Include(d => d.User)
+			.ThenInclude(u => u.UserProfile);
 
-    return await query.ToListAsync();
-  }
-  public async Task<Discussion> GetDiscussionAsync(int id)
+			return await query.ToListAsync();
+		}
+		public async Task<Discussion> GetDiscussionAsync(int id)
 		{
 			var discussion = await _context.Discussions
 			 .Include(d => d.Comments)
@@ -74,26 +74,28 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 			return discussion;
 		}
 
-  public async Task<Discussion> GetDiscussionWithRelationsAsync(int id)
-  {
-    var discussion = await _context.Discussions
-      .Include(d => d.Comments)
-						.ThenInclude(c => c.User)
-						.ThenInclude(u => u.UserProfile)
-      .Include(d => d.User)
-      .ThenInclude(u => u.UserProfile)
-      .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+		public async Task<Discussion> GetDiscussionWithRelationsAsync(int id)
+		{
+			var discussion = await _context.Discussions
+				.Include(d => d.Comments)
+				.ThenInclude(c => c.User)
+				.ThenInclude(u => u.UserProfile)
+				.Include(d => d.Comments)
+				.ThenInclude(c => c.Replies)
+				.Include(d => d.User)
+				.ThenInclude(u => u.UserProfile)
+				.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 
-    if (discussion is null)
-    {
-      throw new KeyNotFoundException("Discussion not found");
-    }
+			if (discussion is null)
+			{
+				throw new KeyNotFoundException("Discussion not found");
+			}
 
-    discussion.Comments.RemoveAll(c => c.IsDeleted);
-    return discussion;
-  }
+			discussion.Comments.RemoveAll(c => c.IsDeleted);
+			return discussion;
+		}
 
-  public async Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion)
+		public async Task<Discussion> ForceUpdateDiscussionAsync(int id, Discussion discussion)
 		{
 			var existing = await GetDiscussionAsync(id);
 			existing.Title = discussion.Title;
@@ -102,6 +104,27 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 
 			await _context.SaveChangesAsync();
 			return existing;
+		}
+
+		public async Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion)
+		{
+			var existing = await GetDiscussionAsync(id);
+			existing.Title = discussion.Title;
+			existing.Content = discussion.Content;
+			existing.Tags = discussion.Tags;
+
+			_context.Entry(existing).Property(d => d.RowVersion).OriginalValue = discussion.RowVersion;
+
+			await _context.SaveChangesAsync();
+			try
+			{
+				await _context.SaveChangesAsync();
+				return existing;
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				throw new InvalidOperationException("Concurrency conflict: the discussion was updated or deleted by another user.");
+			}
 		}
 
 		public async Task SaveChangesAsync()

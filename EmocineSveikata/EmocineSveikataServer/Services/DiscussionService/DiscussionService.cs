@@ -10,6 +10,7 @@ using EmocineSveikataServer.Services.CommentService;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmocineSveikataServer.Services.DiscussionService
 {
@@ -74,16 +75,33 @@ namespace EmocineSveikataServer.Services.DiscussionService
       return _mapped;
     }
 
-    public async Task<DiscussionDto> UpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
+    public async Task<DiscussionDto> ForceUpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
     {
       var discussion = _mapper.Map<Discussion>(discussionDto);
-      var updated = await _repository.UpdateDiscussionAsync(discussionId, discussion);
+      var updated = await _repository.ForceUpdateDiscussionAsync(discussionId, discussion);
       FixReplies(updated);
       return _mapper.Map<DiscussionDto>(updated);
     }
-    public async Task<DiscussionDto> AddCommentToDiscussionAsync(int discussionId, CommentCreateDto commentDto)
+
+    public async Task<DiscussionDto> UpdateDiscussionAsync(int discussionId, DiscussionUpdateDto discussionDto)
     {
-      var discussion = await _repository.GetDiscussionAsync(discussionId);
+      var discussion = _mapper.Map<Discussion>(discussionDto);
+      Discussion updated;
+      try
+      {
+        updated = await _repository.UpdateDiscussionAsync(discussionId, discussion);
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        throw;
+      }
+      FixReplies(updated);
+      return _mapper.Map<DiscussionDto>(updated);
+    }
+
+    public async Task<DiscussionDisplayDto> AddCommentToDiscussionAsync(int discussionId, CommentCreateDto commentDto)
+    {
+      var discussion = await _repository.GetDiscussionWithRelationsAsync(discussionId);
       var user = await _userRepository.GetUserById(commentDto.CreatorUserId);
       var comment = _mapper.Map<Comment>(commentDto);
       discussion.Comments.Add(comment);
@@ -91,7 +109,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
       FixReplies(discussion);
       await _commentService.CreateCommentAsync(comment);
       await _repository.SaveChangesAsync();
-      return _mapper.Map<DiscussionDto>(discussion);
+      return _mapper.Map<DiscussionDisplayDto>(discussion);
     }
     public async Task<DiscussionDto> ChangeLikeStatusAsync(int discussionId, int userId)
     {

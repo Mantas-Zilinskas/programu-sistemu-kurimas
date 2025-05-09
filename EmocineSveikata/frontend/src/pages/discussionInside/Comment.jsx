@@ -46,7 +46,6 @@ const Comment = ({comment, discussionId}) => {
             <img className={styles.authorPicture} src={comment.authorPicture} />
             {comment.authorName}
           </span>
-          <p>thing</p>
         </div>
         <div style={{ display: 'flex' }}>
           <div className={styles.marginRight}>

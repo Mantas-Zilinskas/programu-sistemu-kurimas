@@ -45,17 +45,45 @@ const updateDiscussion = async (discussion) => {
     const response = await axios.put(DiscussionBaseUrl + discussion.id, {
       title: discussion.title,
       content: discussion.content,
-      tags: discussion.tags
+      tags: discussion.tags,
+      rowVersion: discussion.rowVersion
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      validateStatus: () => true
+    });
+
+    return response;
+
+  } catch (error) {
+    alert(error);
+    console.error(error);
+  }
+}
+
+const forceUpdateDiscussion = async (discussion) => {
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  if (!token) throw new Error('Unauthorized');
+
+  try {
+    const response = await axios.put(DiscussionBaseUrl + discussion.id + '/force', {
+      title: discussion.title,
+      content: discussion.content,
+      tags: discussion.tags,
+      rowVersion: discussion.rowVersion
     }, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
+
     return response;
+
   } catch (error) {
-    notify(error)
-    return error;
+    alert(error);
+    console.error(error);
   }
 }
 
-export { fetchDiscussion, likeDiscussion, updateDiscussion };
+export { fetchDiscussion, likeDiscussion, updateDiscussion, forceUpdateDiscussion };

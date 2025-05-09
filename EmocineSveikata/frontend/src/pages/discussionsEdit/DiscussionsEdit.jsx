@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchDiscussion, updateDiscussion } from '../../api/discussionApi.js';
+import { fetchDiscussion, updateDiscussion, forceUpdateDiscussion } from '../../api/discussionApi.js';
 import { fetchTags } from '../../api/tagApi.js';
 import { useAuth } from '../../contexts/AuthContext.jsx'
+import YesNoModal from '../../components/YesNoModal.jsx'
 import './DiscussionsEdit.css';
 
 const DiscussionsEdit = () => {
@@ -11,7 +12,8 @@ const DiscussionsEdit = () => {
   const [currentTag, setCurrentTag] = useState("");
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuth()
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +32,7 @@ const DiscussionsEdit = () => {
       if (currentUser.user.id != discussion.authorId) navigate('/')
       setLoading(!isLoading);
     }
-  },[discussion])
+  }, [discussion])
 
   const handleAddTag = () => {
     if (currentTag && tags.includes(currentTag)) {
@@ -46,15 +48,42 @@ const DiscussionsEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (discussion.title && discussion.content) {
-      await updateDiscussion(discussion);
-      navigate(`/discussions/${id}`);
+      setLoading(true);
+      let response = await updateDiscussion(discussion);
+
+      if (response.status == 200) {
+        navigate(`/discussions/${id}`);
+      } else if (response.status == 409) {
+        setIsModalOpen(true);
+      } else {
+        alert('Something went wrong while trying to update discussion');
+        navigate(`/discussions/${id}`);
+      }
     }
   };
+
+  const handleNo = () => {
+    navigate(`/discussions/${id}`);
+  }
+
+  const handleYes = async () => {
+    if (discussion.title && discussion.content) {
+      await forceUpdateDiscussion(discussion);
+      navigate(`/discussions/${id}`);
+    }
+  }
 
   if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
+        <YesNoModal
+          isOpen={isModalOpen}
+          onRequestClose={() => { setIsModalOpen(false) }}
+          content="Kažkas jau redagavo šią diskusiją. Ar norėtumėt vistiek išsaugoti savo pakeitimus?"
+          handleNo={handleNo}
+          handleYes={handleYes}
+        />
       </div>
     );
   }
@@ -62,7 +91,6 @@ const DiscussionsEdit = () => {
   return ((discussion && (
     <div className="new-discussion-container">
       <h1 className="new-discussion-title">Redaguoti diskusiją</h1>
-
       <div className="new-discussion-form-card">
         <form className="new-discussion-form" onSubmit={handleSubmit}>
           <div className="form-group">

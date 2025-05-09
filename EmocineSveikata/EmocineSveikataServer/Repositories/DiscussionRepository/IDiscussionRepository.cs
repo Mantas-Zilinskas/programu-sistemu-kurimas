@@ -9,9 +9,10 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		Task<IEnumerable<Discussion>> GetAllDiscussionsAsync();
 		Task<Discussion> GetDiscussionAsync(int id);
 		Task AddDiscussionAsync(Discussion discussion);
+		Task<Discussion> ForceUpdateDiscussionAsync(int id, Discussion discussion);
 		Task<Discussion> UpdateDiscussionAsync(int id, Discussion discussion);
 		Task DeleteDiscussionAsync(int id);
 		Task<Discussion> GetDiscussionWithRelationsAsync(int id);
-  Task SaveChangesAsync();
+		Task SaveChangesAsync();
 	}
 }
