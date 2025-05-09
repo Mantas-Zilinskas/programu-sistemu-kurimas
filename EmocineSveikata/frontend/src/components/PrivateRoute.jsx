@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 // PrivateRoute Component: Conditional Rendering Based on Role
-const PrivateRoute = ({ roleRequired, children }) => {
+const PrivateRoute = ({ roleRequired = 'none', children }) => {
     const { currentUser } = useAuth();
 
     if (!currentUser) {
@@ -12,6 +12,10 @@ const PrivateRoute = ({ roleRequired, children }) => {
 
     if (!currentUser.user) {
         return <div>Kraunama...</div>; // Show loading while user data is being fetched
+    }
+
+    if (currentUser.user.role.toLowerCase() !== 'none') {
+      return children;
     }
 
     if (currentUser.user.role.toLowerCase() !== roleRequired.toLowerCase()) {

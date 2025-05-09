@@ -6,6 +6,7 @@ using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -66,10 +67,26 @@ namespace EmocineSveikataServer.Controllers
 			return CreatedAtAction(nameof(GetDiscussion), new { discussionId = newDto.Id }, newDto);
 		}
 
+		[HttpPut("{discussionId}/force")]
+		public async Task<IActionResult> ForceEditDiscussion(int discussionId, [FromBody] DiscussionUpdateDto discussionDto)
+		{
+			var updatedDto = await _service.ForceUpdateDiscussionAsync(discussionId, discussionDto);
+			if (updatedDto == null) return NotFound();
+			return Ok(updatedDto);
+		}
+
 		[HttpPut("{discussionId}")]
 		public async Task<IActionResult> EditDiscussion(int discussionId, [FromBody] DiscussionUpdateDto discussionDto)
 		{
-			var updatedDto = await _service.UpdateDiscussionAsync(discussionId, discussionDto);
+			DiscussionDto updatedDto;
+			try
+			{
+				updatedDto = await _service.UpdateDiscussionAsync(discussionId, discussionDto);
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				return Conflict(new { message = "The item you attempted to edit was already modified." });
+			}
 			if (updatedDto == null) return NotFound();
 			return Ok(updatedDto);
 		}
@@ -99,6 +116,5 @@ namespace EmocineSveikataServer.Controllers
 			if (discussionDto == null) return NotFound();
 			return Ok(discussionDto);
 		}
-
 	}
 }

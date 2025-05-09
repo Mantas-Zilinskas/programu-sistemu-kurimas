@@ -30,6 +30,22 @@ public class CommentRepository : ICommentRepository
 		return comment;
 	}
 
+	public async Task<Comment> GetCommentWithRelationsAsync(int id)
+	{
+		var comment = await _context
+			.Comments
+			.Include(c => c.User)
+			.ThenInclude(u => u.UserProfile)
+			.Include(c => c.Replies)
+			.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+		if (comment is null)
+		{
+			throw new KeyNotFoundException("Comment not found");
+		}
+
+		return comment;
+	}
+
 	public async Task AddCommentAsync(Comment comment)
 	{
 		_context.Comments.Add(comment);
