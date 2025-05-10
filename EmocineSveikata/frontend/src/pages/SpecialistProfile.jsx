@@ -4,7 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SpecialistProfile.css';
 
-const topics = ["Depresija", "Psichinė sveikata", "ADHD", "Terapija", "Santykiai", "Fizinė sveikata"];
+const topicsMap = {
+    "Depression": "Depresija",
+    "MentalHealth": "Psichinė sveikata",
+    "ADHD": "ADHD",
+    "Therapy": "Terapija",
+    "Relationships": "Santykiai",
+    "PhysicalHealth": "Fizinė sveikata"
+};
+
+const topics = Object.entries(topicsMap).map(([key, value]) => ({ key, value }));
 
 const SpecialistProfile = () => {
     const { currentUser } = useAuth();
@@ -23,7 +32,7 @@ const SpecialistProfile = () => {
 
     const fetchSpecialistProfile = async () => {
         if (!currentUser || !currentUser.user) return;
-        
+
         try {
             setLoading(true);
             const response = await axios.get(`/api/Profile/specialist/${currentUser.user.id}`, {
@@ -31,7 +40,7 @@ const SpecialistProfile = () => {
                     'Authorization': `Bearer ${currentUser.token}`
                 }
             });
-            
+
             if (response.data) {
                 setBio(response.data.bio || '');
                 setSelectedTopics(response.data.selectedTopics || []);
@@ -39,7 +48,6 @@ const SpecialistProfile = () => {
             }
         } catch (err) {
             console.log('Profile not found, will create on save:', err);
-            // If profile doesn't exist yet, that's okay - we'll create it when they save
         } finally {
             setLoading(false);
         }
@@ -47,17 +55,17 @@ const SpecialistProfile = () => {
 
     const handleBioChange = (e) => setBio(e.target.value);
 
-    const handleCheckboxChange = (topic) => {
+    const handleCheckboxChange = (topicKey, topicValue) => {
         setSelectedTopics((prevTopics) =>
-            prevTopics.includes(topic)
-                ? prevTopics.filter(t => t !== topic)
-                : [...prevTopics, topic]
+            prevTopics.includes(topicKey)
+                ? prevTopics.filter(t => t !== topicKey)
+                : [...prevTopics, topicKey]
         );
     };
 
     const handleImageUpload = (e) => {
         if (!currentUser || !currentUser.user) return;
-        
+
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -68,25 +76,25 @@ const SpecialistProfile = () => {
 
     const handleSave = async () => {
         if (!currentUser || !currentUser.user) return;
-        
+
         try {
             setLoading(true);
             setError('');
-            
+
             const profileData = {
                 userId: currentUser.user.id,
                 profilePicture: imagePreview,
                 bio: bio,
                 selectedTopics: selectedTopics
             };
-            
+
             await axios.post('/api/Profile/specialist', profileData, {
                 headers: {
                     'Authorization': `Bearer ${currentUser.token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             alert('Profilis išsaugotas!');
         } catch (err) {
             console.error('Error saving profile:', err);
@@ -96,7 +104,6 @@ const SpecialistProfile = () => {
         }
     };
 
-    // If currentUser is not available, show loading
     if (!currentUser || !currentUser.user) {
         return <div className="profile-container">Kraunama...</div>;
     }
@@ -127,15 +134,15 @@ const SpecialistProfile = () => {
             <div className="topics-selection">
                 <label>Pageidaujamos pozityvių žinučių temos:</label>
                 <div className="topics-checkboxes">
-                    {topics.map(topic => (
-                        <label key={topic} className="checkbox-container">
+                    {topics.map(({ key, value }) => (
+                        <label key={key} className="checkbox-container">
                             <input
                                 type="checkbox"
-                                checked={selectedTopics.includes(topic)}
-                                onChange={() => handleCheckboxChange(topic)}
+                                checked={selectedTopics.includes(key)}
+                                onChange={() => handleCheckboxChange(key, value)}
                             />
                             <span className="checkmark"></span>
-                            {topic}
+                            {value}
                         </label>
                     ))}
                 </div>

@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Dto.ProfileDtos;
+using EmocineSveikataServer.Enums;
 using System.Text.Json;
+using System;
+using System.Linq;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -37,8 +40,8 @@ namespace EmocineSveikataServer.Controllers
             {
                 UserId = profile.UserId,
                 ProfilePicture = profile.ProfilePicture,
-                SelectedTopics = profile.SelectedTopics != null 
-                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics) 
+                SelectedTopics = profile.SelectedTopics != null
+                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics)
                     : new List<string>()
             };
 
@@ -55,16 +58,25 @@ namespace EmocineSveikataServer.Controllers
             {
                 profile = await _userProfileRepository.GetUserProfileByUserId(profileDto.UserId);
                 profile.ProfilePicture = profileDto.ProfilePicture;
-                profile.SelectedTopics = JsonSerializer.Serialize(profileDto.SelectedTopics);
+
+                var validEnumValues = profileDto.SelectedTopics
+                    .Where(topic => Enum.TryParse<DiscussionTagEnum>(topic, out _))
+                    .ToList();
+
+                profile.SelectedTopics = JsonSerializer.Serialize(validEnumValues);
                 profile = await _userProfileRepository.UpdateUserProfile(profile);
             }
             else
             {
+                var validEnumValues = profileDto.SelectedTopics
+                    .Where(topic => Enum.TryParse<DiscussionTagEnum>(topic, out _))
+                    .ToList();
+
                 profile = new UserProfile
                 {
                     UserId = profileDto.UserId,
                     ProfilePicture = profileDto.ProfilePicture,
-                    SelectedTopics = JsonSerializer.Serialize(profileDto.SelectedTopics),
+                    SelectedTopics = JsonSerializer.Serialize(validEnumValues),
                     UpdatedAt = DateTime.UtcNow
                 };
                 profile = await _userProfileRepository.CreateUserProfile(profile);
@@ -87,8 +99,8 @@ namespace EmocineSveikataServer.Controllers
                 UserId = profile.UserId,
                 ProfilePicture = profile.ProfilePicture,
                 Bio = profile.Bio,
-                SelectedTopics = profile.SelectedTopics != null 
-                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics) 
+                SelectedTopics = profile.SelectedTopics != null
+                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics)
                     : new List<string>()
             };
 
@@ -106,17 +118,26 @@ namespace EmocineSveikataServer.Controllers
                 profile = await _specialistProfileRepository.GetSpecialistProfileByUserId(profileDto.UserId);
                 profile.ProfilePicture = profileDto.ProfilePicture;
                 profile.Bio = profileDto.Bio;
-                profile.SelectedTopics = JsonSerializer.Serialize(profileDto.SelectedTopics);
+
+                var validEnumValues = profileDto.SelectedTopics
+                    .Where(topic => Enum.TryParse<DiscussionTagEnum>(topic, out _))
+                    .ToList();
+
+                profile.SelectedTopics = JsonSerializer.Serialize(validEnumValues);
                 profile = await _specialistProfileRepository.UpdateSpecialistProfile(profile);
             }
             else
             {
+                var validEnumValues = profileDto.SelectedTopics
+                    .Where(topic => Enum.TryParse<DiscussionTagEnum>(topic, out _))
+                    .ToList();
+
                 profile = new SpecialistProfile
                 {
                     UserId = profileDto.UserId,
                     ProfilePicture = profileDto.ProfilePicture,
                     Bio = profileDto.Bio,
-                    SelectedTopics = JsonSerializer.Serialize(profileDto.SelectedTopics),
+                    SelectedTopics = JsonSerializer.Serialize(validEnumValues),
                     UpdatedAt = DateTime.UtcNow
                 };
                 profile = await _specialistProfileRepository.CreateSpecialistProfile(profile);
@@ -146,6 +167,12 @@ namespace EmocineSveikataServer.Controllers
         [HttpPost("specialist/timeslot")]
         public async Task<ActionResult<SpecialistTimeSlotDto>> CreateTimeSlot(SpecialistTimeSlotDto timeSlotDto)
         {
+            var specialistProfileExists = await _specialistProfileRepository.SpecialistProfileExists(timeSlotDto.UserId);
+            if (!specialistProfileExists)
+            {
+                return BadRequest(new { message = "Specialist profile not found. Please complete your profile before adding time slots." });
+            }
+
             var timeSlot = new SpecialistTimeSlot
             {
                 UserId = timeSlotDto.UserId,
@@ -179,7 +206,7 @@ namespace EmocineSveikataServer.Controllers
             existingTimeSlot.BookedByUserId = timeSlotDto.BookedByUserId;
 
             var updatedTimeSlot = await _timeSlotRepository.UpdateTimeSlot(existingTimeSlot);
-            
+
             return Ok(timeSlotDto);
         }
 
