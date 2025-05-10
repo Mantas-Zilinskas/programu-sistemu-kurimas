@@ -5,46 +5,81 @@ import './SpecialistCalendar.css';
 
 const SpecialistCalendar = () => {
     const { currentUser } = useAuth();
-    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const savedYear = localStorage.getItem('specialistCalendarYear');
+        const savedMonth = localStorage.getItem('specialistCalendarMonth');
+        const savedDay = localStorage.getItem('specialistCalendarDay');
+
+        if (savedYear && savedMonth && savedDay) {
+            const year = parseInt(savedYear, 10);
+            const month = parseInt(savedMonth, 10) - 1;
+            const day = parseInt(savedDay, 10);
+
+            const date = new Date();
+            date.setFullYear(year);
+            date.setMonth(month);
+            date.setDate(day);
+            date.setHours(12, 0, 0, 0); 
+
+            return date;
+        } else {
+            const today = new Date();
+            today.setHours(12, 0, 0, 0);
+            return today;
+        }
+    });
+
+
     const [timeSlots, setTimeSlots] = useState([]);
     const [view, setView] = useState('week');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    
-    // Generate time slots from 8:00 to 20:00
+
     const hours = Array.from({ length: 13 }, (_, i) => i + 8);
-    
+
+    useEffect(() => {
+        localStorage.setItem('specialistCalendarYear', selectedDate.getFullYear());
+        localStorage.setItem('specialistCalendarMonth', selectedDate.getMonth() + 1);
+        localStorage.setItem('specialistCalendarDay', selectedDate.getDate());
+    }, [selectedDate]);
+
     useEffect(() => {
         if (currentUser && currentUser.user) {
             fetchTimeSlots();
         }
     }, [currentUser]);
-    
-    // Fetch time slots from the server
+
     const fetchTimeSlots = async () => {
         if (!currentUser || !currentUser.user) return;
-        
+
         try {
             setLoading(true);
             setError('');
-            
+
             const response = await axios.get(`/api/Profile/specialist/${currentUser.user.id}/timeslots`, {
                 headers: {
                     'Authorization': `Bearer ${currentUser.token}`
                 }
             });
-            
+
             if (response.data) {
-                // Convert API time slots to our format
-                const formattedSlots = response.data.map(slot => ({
-                    id: slot.id,
-                    date: new Date(slot.date).toISOString().split('T')[0],
-                    time: slot.startTime.substring(0, 5), // Format HH:MM
-                    endTime: slot.endTime.substring(0, 5),
-                    isBooked: slot.isBooked,
-                    bookedByUserId: slot.bookedByUserId
-                }));
-                
+                const formattedSlots = response.data.map(slot => {
+                    const dbDateString = slot.date.split(' ')[0];
+                    const [year, month, day] = dbDateString.split('-').map(Number);
+
+                    const localDate = new Date(year, month - 1, day);
+
+                    return {
+                        id: slot.id,
+                        date: formatDate(localDate),
+                        time: slot.startTime.substring(0, 5),
+                        endTime: slot.endTime.substring(0, 5),
+                        isBooked: slot.isBooked,
+                        bookedByUserId: slot.bookedByUserId
+                    };
+                });
+
                 setTimeSlots(formattedSlots);
             }
         } catch (err) {
@@ -54,108 +89,135 @@ const SpecialistCalendar = () => {
             setLoading(false);
         }
     };
-    
-    // Generate dates for the current week view
+
     const getDatesForWeek = () => {
         const dates = [];
         const startOfWeek = new Date(selectedDate);
         const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
         startOfWeek.setDate(diff);
-        
+
         for (let i = 0; i < 7; i++) {
             const date = new Date(startOfWeek);
             date.setDate(date.getDate() + i);
             dates.push(date);
         }
-        
+
         return dates;
     };
-    
-    // Format date as YYYY-MM-DD
+
     const formatDate = (date) => {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `<span class="math-inline">\{year\}\-</span>{month}-${day}`;
     };
-    
-    // Format time as HH:00
+
     const formatTime = (hour) => {
         return `${hour.toString().padStart(2, '0')}:00`;
     };
-    
-    // Check if a time slot is selected
+
     const isTimeSlotSelected = (date, hour) => {
         const dateStr = formatDate(date);
         const timeStr = formatTime(hour);
         return timeSlots.some(slot => slot.date === dateStr && slot.time === timeStr);
     };
-    
-    // Check if a time slot is booked
+
     const isTimeSlotBooked = (date, hour) => {
         const dateStr = formatDate(date);
         const timeStr = formatTime(hour);
         const slot = timeSlots.find(slot => slot.date === dateStr && slot.time === timeStr);
         return slot ? slot.isBooked : false;
     };
-    
-    // Toggle time slot selection
+
     const toggleTimeSlot = async (date, hour) => {
         if (!currentUser || !currentUser.user) return;
-        
+
         const dateStr = formatDate(date);
         const timeStr = formatTime(hour);
         const endHour = hour + 1;
         const endTimeStr = `${endHour.toString().padStart(2, '0')}:00`;
-        
+
         const existingSlot = timeSlots.find(
             slot => slot.date === dateStr && slot.time === timeStr
         );
-        
+
         try {
             setLoading(true);
             setError('');
-            
+
             if (existingSlot) {
-                // Delete the slot if it exists and is not booked
                 if (existingSlot.isBooked) {
                     setError('Negalima ištrinti užrezervuoto laiko.');
                     return;
                 }
-                
+
                 await axios.delete(`/api/Profile/specialist/timeslot/${existingSlot.id}`, {
                     headers: {
                         'Authorization': `Bearer ${currentUser.token}`
                     }
                 });
-                
-                // Update local state
+
                 setTimeSlots(timeSlots.filter(slot => slot.id !== existingSlot.id));
             } else {
-                // Create a new time slot
                 const newSlot = {
                     userId: currentUser.user.id,
-                    date: new Date(dateStr),
+                    date: formatDate(date),
                     startTime: timeStr,
                     endTime: endTimeStr,
                     isBooked: false,
                     bookedByUserId: null
                 };
-                
-                const response = await axios.post('/api/Profile/specialist/timeslot', newSlot, {
-                    headers: {
-                        'Authorization': `Bearer ${currentUser.token}`,
-                        'Content-Type': 'application/json'
+
+
+                try {
+                    const response = await axios.post('/api/Profile/specialist/timeslot', newSlot, {
+                        headers: {
+                            'Authorization': `Bearer ${currentUser.token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    setTimeSlots([...timeSlots, {
+                        id: response.data.id,
+                        date: dateStr,
+                        time: timeStr,
+                        endTime: endTimeStr,
+                        isBooked: false,
+                        bookedByUserId: null
+                    }]);
+                } catch (error) {
+                    console.error('Error creating time slot:', error);
+
+                    if (error.response &&
+                        error.response.data &&
+                        error.response.data.message &&
+                        error.response.data.message.includes('Specialist profile not found')) {
+                        setError(
+                            <div className="custom-alert">
+                                <div className="custom-alert-content">
+                                    <div className="custom-alert-icon">
+                                        <i className="bi bi-exclamation-triangle-fill text-warning"></i>
+                                    </div>
+                                    <div className="custom-alert-message">
+                                        <h5>Profilis neužpildytas</h5>
+                                        <p>
+                                            Prieš pridedant laisvus laikus, reikia užpildyti specialisto profilį.
+                                        </p>
+                                        <a href="/specialistprofile" className="btn btn-outline-primary btn-sm mt-2">
+                                            <i className="bi bi-pencil-square me-1"></i>
+                                            Užpildyti profilį
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                        setLoading(false);
+                        return;
+                    } else {
+                        setError('Nepavyko pridėti laisvo laiko. Bandykite dar kartą.');
                     }
-                });
-                
-                // Add the new slot to local state
-                setTimeSlots([...timeSlots, {
-                    id: response.data.id,
-                    date: dateStr,
-                    time: timeStr,
-                    endTime: endTimeStr,
-                    isBooked: false,
-                    bookedByUserId: null
-                }]);
+                }
             }
         } catch (err) {
             console.error('Error updating time slot:', err);
@@ -164,38 +226,36 @@ const SpecialistCalendar = () => {
             setLoading(false);
         }
     };
-    
-    // Navigate to previous week
+
     const previousWeek = () => {
         const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() - 7);
+        newDate.setHours(12, 0, 0, 0);
         setSelectedDate(newDate);
     };
-    
-    // Navigate to next week
+
     const nextWeek = () => {
         const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() + 7);
+        newDate.setHours(12, 0, 0, 0);
         setSelectedDate(newDate);
     };
-    
-    // Format date for display
+
     const formatDateForDisplay = (date) => {
         const options = { weekday: 'short', month: 'numeric', day: 'numeric' };
         return date.toLocaleDateString('lt-LT', options);
     };
-    
-    // If currentUser is not available, show loading
+
     if (!currentUser || !currentUser.user) {
         return <div className="calendar-container">Kraunama...</div>;
     }
-    
+
     return (
         <div className="calendar-container">
             <h2>Jūsų laisvi laikai</h2>
-            
-            {error && <div className="alert alert-danger">{error}</div>}
-            
+
+            {error && (typeof error === 'string' ? <div className="alert alert-danger">{error}</div> : error)}
+
             <div className="calendar-controls mb-3">
                 <button className="btn btn-outline-primary" onClick={previousWeek}>
                     &lt; Ankstesnė savaitė
@@ -207,7 +267,7 @@ const SpecialistCalendar = () => {
                     Kita savaitė &gt;
                 </button>
             </div>
-            
+
             <div className="table-responsive">
                 <table className="table table-bordered calendar-table">
                     <thead>
@@ -223,8 +283,8 @@ const SpecialistCalendar = () => {
                             <tr key={hour}>
                                 <td className="time-cell">{formatTime(hour)}</td>
                                 {getDatesForWeek().map((date, index) => (
-                                    <td 
-                                        key={index} 
+                                    <td
+                                        key={index}
                                         className={`time-slot ${isTimeSlotSelected(date, hour) ? 'selected' : ''} ${isTimeSlotBooked(date, hour) ? 'booked' : ''}`}
                                         onClick={() => toggleTimeSlot(date, hour)}
                                     >
@@ -238,7 +298,7 @@ const SpecialistCalendar = () => {
                     </tbody>
                 </table>
             </div>
-            
+
             <p className="instruction mt-3">
                 Paspauskite ant laiko langelio, kad pažymėtumėte jį kaip laisvą laiką.
                 Paspauskite dar kartą, kad pašalintumėte.
