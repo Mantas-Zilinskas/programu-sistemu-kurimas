@@ -31,5 +31,6 @@ namespace EmocineSveikataServer.Models
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public virtual ICollection<Discussion> Discussions { get; set; } = new List<Discussion>();
         public virtual UserProfile? UserProfile { get; set; }
+        public virtual SpecialistProfile? SpecialistProfile { get; set; }
     }
 }

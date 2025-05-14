@@ -34,9 +34,10 @@ public class CommentRepository : ICommentRepository
 	{
 		var comment = await _context
 			.Comments
-			.Include(c => c.User)
-			.ThenInclude(u => u.UserProfile)
-			.Include(c => c.Replies)
+			.Include(c => c.User).ThenInclude(u => u.UserProfile)
+			.Include(c => c.User).ThenInclude(u => u.SpecialistProfile)
+			.Include(c => c.Replies).ThenInclude(r => r.User).ThenInclude(u => u.UserProfile)
+			.Include(c => c.Replies).ThenInclude(r => r.User).ThenInclude(u => u.SpecialistProfile)
 			.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 		if (comment is null)
 		{

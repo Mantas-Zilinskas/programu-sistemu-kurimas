@@ -35,30 +35,27 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		{
 			return await _context.Discussions.OrderByDescending(d => d.Id).ToListAsync();
 		}
-		public async Task<IEnumerable<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag, bool isPopular)
+
+		public async Task<IEnumerable<Discussion>> GetPagedDiscussionsAsync(int page, int pageSize, DiscussionTagEnum? tag)
 		{
 			var query = _context.Discussions
-			 .OrderByDescending(d => d.Id)
 			 .Where(d => !d.IsDeleted);
 
 			if (tag != null)
-			{
 				query = query.Where(d => d.Tags != null && d.Tags.Contains(tag.Value));
-			}
-
-			if (isPopular)
-			{
-				query = query.OrderByDescending(d => d.Likes);
-			}
 
 			query = query
 			.Skip((page - 1) * pageSize)
 			.Take(pageSize)
-			.Include(d => d.User)
-			.ThenInclude(u => u.UserProfile);
+			.Include(d => d.User).ThenInclude(u => u.UserProfile)
+			.Include(d => d.User).ThenInclude(u => u.SpecialistProfile);
+
+
+			query = query.OrderByDescending(d => d.Id);
 
 			return await query.ToListAsync();
 		}
+
 		public async Task<Discussion> GetDiscussionAsync(int id)
 		{
 			var discussion = await _context.Discussions
@@ -77,13 +74,11 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		public async Task<Discussion> GetDiscussionWithRelationsAsync(int id)
 		{
 			var discussion = await _context.Discussions
-				.Include(d => d.Comments)
-				.ThenInclude(c => c.User)
-				.ThenInclude(u => u.UserProfile)
-				.Include(d => d.Comments)
-				.ThenInclude(c => c.Replies)
-				.Include(d => d.User)
-				.ThenInclude(u => u.UserProfile)
+				.Include(d => d.Comments).ThenInclude(c => c.User).ThenInclude(u => u.UserProfile)
+				.Include(d => d.Comments).ThenInclude(c => c.User).ThenInclude(u => u.SpecialistProfile)
+				.Include(d => d.Comments).ThenInclude(c => c.Replies)
+				.Include(d => d.User).ThenInclude(u => u.UserProfile)
+				.Include(d => d.User).ThenInclude(u => u.SpecialistProfile)
 				.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 
 			if (discussion is null)

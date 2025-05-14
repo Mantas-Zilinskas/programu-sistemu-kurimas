@@ -5,6 +5,7 @@ using EmocineSveikataServer.Models;
 using AutoMapper;
 using EmocineSveikataServer.Dto.DiscussionDisplayDto;
 using EmocineSveikataServer.Dto.CommentDtos;
+using EmocineSveikataServer.Helper;
 
 namespace EmocineSveikataServer.Mapper
 {
@@ -18,7 +19,7 @@ namespace EmocineSveikataServer.Mapper
 				.ForMember(dest => dest.AuthorName,
 				opt => opt.MapFrom(src => src.User != null ? src.User.Username : null))
 				.ForMember(dest => dest.AuthorPicture,
-				opt => opt.MapFrom(src => src.User != null ? src.User.UserProfile.ProfilePicture : null));
+				opt => opt.MapFrom(src => MapperHelper.GetProfilePicture(src.User)));
 			CreateMap<Discussion, DiscussionDto>();
 			CreateMap<DiscussionCreateDto, Discussion>();
 			CreateMap<DiscussionUpdateDto, Discussion>();
@@ -30,7 +31,7 @@ namespace EmocineSveikataServer.Mapper
 				.ForMember(dest => dest.AuthorName,
 				opt => opt.MapFrom(src => src.User != null ? src.User.Username : null))
 				.ForMember(dest => dest.AuthorPicture,
-				opt => opt.MapFrom(src => src.User != null ? src.User.UserProfile.ProfilePicture : null));
+				opt => opt.MapFrom(src => MapperHelper.GetProfilePicture(src.User)));
 			CreateMap<CommentCreateDto, Comment>();
 			CreateMap<CommentUpdateDto, Comment>();
 

@@ -47,13 +47,14 @@ namespace EmocineSveikataServer.Services.CommentService
 
 		public async Task<CommentDisplayDto> ReplyToCommentAsync(int discussionId, int commentId, CommentCreateDto replyDto, int userId)
 		{
-			var comment = await _repository.GetCommentWithRelationsAsync(commentId);
+			var comment = await _repository.GetCommentAsync(commentId);
 			var reply = _mapper.Map<Comment>(replyDto);
 			var user = await _userRepository.GetUserById(userId);
 			user.Comments.Add(reply);
 			reply.DiscussionId = discussionId;
 			comment.Replies.Add(reply);
 			await CreateCommentAsync(reply);
+			comment = await _repository.GetCommentWithRelationsAsync(commentId);
 			return _mapper.Map<CommentDisplayDto>(comment);
 		}
 
