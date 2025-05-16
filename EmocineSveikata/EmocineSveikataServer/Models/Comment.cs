@@ -13,5 +13,6 @@ namespace EmocineSveikataServer.Models
         public int Likes => LikedBy.Count;
         public bool IsDeleted { get; set; }
         public List<Comment> Replies { get; set; } = new List<Comment>();
+        public virtual User? User { get; set; }
     }
 }

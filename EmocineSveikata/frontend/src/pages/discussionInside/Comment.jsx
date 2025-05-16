@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CommentWidget from './CommentWidget';
 import { TextField, Divider, Button } from '@mui/material';
 import { replyToComment } from '../../api/commentApi.js';
@@ -41,6 +41,12 @@ const Comment = ({comment, discussionId}) => {
   return (
     <>
       <div className={commentStyles.commentCard}>
+        <div className={styles.discussionHeader}>
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            <img className={styles.authorPicture} src={comment.authorPicture} />
+            {comment.authorName}
+          </span>
+        </div>
         <div style={{ display: 'flex' }}>
           <div className={styles.marginRight}>
             <CommentWidget

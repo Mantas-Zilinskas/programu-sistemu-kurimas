@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EmocineSveikataServer.Dto.CommentDto;
+using EmocineSveikataServer.Dto.CommentDtos;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
@@ -44,7 +45,7 @@ namespace EmocineSveikataServer.Services.CommentService
 			return _mapped;
 		}
 
-		public async Task<CommentDto> ReplyToCommentAsync(int discussionId, int commentId, CommentCreateDto replyDto, int userId)
+		public async Task<CommentDisplayDto> ReplyToCommentAsync(int discussionId, int commentId, CommentCreateDto replyDto, int userId)
 		{
 			var comment = await _repository.GetCommentAsync(commentId);
 			var reply = _mapper.Map<Comment>(replyDto);
@@ -53,7 +54,8 @@ namespace EmocineSveikataServer.Services.CommentService
 			reply.DiscussionId = discussionId;
 			comment.Replies.Add(reply);
 			await CreateCommentAsync(reply);
-			return _mapper.Map<CommentDto>(comment);
+			comment = await _repository.GetCommentWithRelationsAsync(commentId);
+			return _mapper.Map<CommentDisplayDto>(comment);
 		}
 
 		public async Task<IEnumerable<Comment>> GetCommentsByDiscussionAsync(int discussionId)

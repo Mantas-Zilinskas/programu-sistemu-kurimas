@@ -4,6 +4,7 @@ using EmocineSveikataServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmocineSveikataServer.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250507171757_AddRowVersionOnDiscussions")]
+    partial class AddRowVersionOnDiscussions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,8 +132,7 @@ namespace EmocineSveikataServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("SpecialistProfiles");
                 });
@@ -274,8 +276,8 @@ namespace EmocineSveikataServer.Migrations
             modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
                 {
                     b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithOne("SpecialistProfile")
-                        .HasForeignKey("EmocineSveikataServer.Models.SpecialistProfile", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -325,8 +327,6 @@ namespace EmocineSveikataServer.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Discussions");
-
-                    b.Navigation("SpecialistProfile");
 
                     b.Navigation("UserProfile");
                 });
