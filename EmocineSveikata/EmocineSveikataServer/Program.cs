@@ -39,9 +39,24 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    // Ctikrinam kokia sistema naudojama
+    bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+    
+    if (isWindows)
+    {
+        // Naudojamas SQL Server LocalDB Windows
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        // Naudojamas SQLite Linux/Mac
+        var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLiteConnection") 
+            ?? "Data Source=EmocineSveikata.db";
+        options.UseSqlite(sqliteConnectionString);
+        
+        Console.WriteLine("Using SQLite database on non-Windows platform");
+    }
 });
-
 
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -143,6 +158,20 @@ catch (Exception ex)
 }
 
 var app = builder.Build();
+
+if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        
+        dbContext.Database.EnsureDeleted();
+        
+        dbContext.Database.EnsureCreated();
+        
+        Console.WriteLine("SQLite database created or verified successfully");
+    }
+}
 
 // === Middleware ===
 // SVARBU: CORS middleware turi but callintas pries kitus middleware

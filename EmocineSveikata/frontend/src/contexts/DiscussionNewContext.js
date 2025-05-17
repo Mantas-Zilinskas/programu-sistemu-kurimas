@@ -15,12 +15,14 @@ export const DiscussionNewProvider = ({ children }) => {
   }, []);
 
   const createDiscussion = async (discussionData) => {
+	const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
       
       const response = await fetch('/api/discussions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+		  'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(discussionData),
       });

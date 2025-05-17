@@ -1,4 +1,6 @@
-﻿namespace EmocineSveikataServer.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EmocineSveikataServer.Models
 {
     public class Comment
     {
@@ -6,8 +8,11 @@
         public int? DiscussionId { get; set; }
         public int? CommentId { get; set; }
         public required string Content { get; set; }
-        public int Likes { get; set; }
+        public List<int> LikedBy { get; set; } = new List<int>();
+        [NotMapped]
+        public int Likes => LikedBy.Count;
         public bool IsDeleted { get; set; }
-        public List<Comment>? Replies { get; set; } = new List<Comment>();
+        public List<Comment> Replies { get; set; } = new List<Comment>();
+        public virtual User? User { get; set; }
     }
 }

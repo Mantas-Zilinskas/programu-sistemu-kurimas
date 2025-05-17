@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Discussions from './components/Discussions';
-import DiscussionInside from './pages/DiscussionInside/DiscussionInside';
+import DiscussionInside from './pages/discussionInside/DiscussionInside'; // pakeista suderinamumui su linux (case sensitive)
 import DiscussionsNew from './components/DiscussionsNew';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -13,6 +13,7 @@ import UserProfile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import SpecialistCalendar from './pages/SpecialistCalendar';
 import Rooms from './pages/rooms/Rooms';
+import DiscussionsEdit from './pages/discussionsEdit/DiscussionsEdit';
 import './App.css';
 
 function App() {
@@ -53,6 +54,13 @@ function App() {
                                 element={
                                     <PrivateRoute roleRequired="specialistas">
                                         <SpecialistCalendar />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route path="/discussions/edit/:id"
+                                element={
+                                    <PrivateRoute>
+                                        <DiscussionsEdit />
                                     </PrivateRoute>
                                 }
                             />

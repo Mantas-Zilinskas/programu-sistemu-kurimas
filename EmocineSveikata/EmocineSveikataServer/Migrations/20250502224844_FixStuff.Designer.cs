@@ -4,6 +4,7 @@ using EmocineSveikataServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmocineSveikataServer.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250502224844_FixStuff")]
+    partial class FixStuff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,12 +83,6 @@ namespace EmocineSveikataServer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.PrimitiveCollection<string>("Tags")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -129,8 +126,7 @@ namespace EmocineSveikataServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("SpecialistProfiles");
                 });
@@ -239,8 +235,7 @@ namespace EmocineSveikataServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserProfiles");
                 });
@@ -255,27 +250,23 @@ namespace EmocineSveikataServer.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("DiscussionId");
 
-                    b.HasOne("EmocineSveikataServer.Models.User", "User")
+                    b.HasOne("EmocineSveikataServer.Models.User", null)
                         .WithMany("Comments")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.Discussion", b =>
                 {
-                    b.HasOne("EmocineSveikataServer.Models.User", "User")
+                    b.HasOne("EmocineSveikataServer.Models.User", null)
                         .WithMany("Discussions")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
                 {
                     b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithOne("SpecialistProfile")
-                        .HasForeignKey("EmocineSveikataServer.Models.SpecialistProfile", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -302,8 +293,8 @@ namespace EmocineSveikataServer.Migrations
             modelBuilder.Entity("EmocineSveikataServer.Models.UserProfile", b =>
                 {
                     b.HasOne("EmocineSveikataServer.Models.User", "User")
-                        .WithOne("UserProfile")
-                        .HasForeignKey("EmocineSveikataServer.Models.UserProfile", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -325,10 +316,6 @@ namespace EmocineSveikataServer.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Discussions");
-
-                    b.Navigation("SpecialistProfile");
-
-                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }
