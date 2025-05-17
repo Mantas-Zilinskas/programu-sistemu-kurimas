@@ -19,6 +19,20 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
                 .FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
+        public async Task<List<SpecialistProfile>> GetSpecialistProfilesByUserIds(List<int> userIds)  // If there are duplicates in `userIds`, duplicate profiles will be returned (this is on purpose)
+        {
+            var profilesDict = await _context.SpecialistProfiles
+                .Where(p => userIds.Contains(p.UserId))
+                .ToDictionaryAsync(p => p.UserId);
+
+            var result = userIds
+                .Where(id => profilesDict.ContainsKey(id))
+                .Select(id => profilesDict[id])
+                .ToList();
+
+            return result;
+        }
+
         public async Task<SpecialistProfile> CreateSpecialistProfile(SpecialistProfile specialistProfile)
         {
             _context.SpecialistProfiles.Add(specialistProfile);

@@ -12,6 +12,7 @@ import SpecialistProfile from './pages/SpecialistProfile';
 import UserProfile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import SpecialistCalendar from './pages/SpecialistCalendar';
+import Rooms from './pages/rooms/Rooms';
 import DiscussionsEdit from './pages/discussionsEdit/DiscussionsEdit';
 import './App.css';
 
@@ -27,6 +28,7 @@ function App() {
                             <Route path="/discussions" element={<Discussions />} />
                             <Route path="/discussions/:id" element={<DiscussionInside />} />
                             <Route path="/discussions/new" element={<DiscussionsNew />} />
+                            <Route path="/rooms" element={<Rooms />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
 
