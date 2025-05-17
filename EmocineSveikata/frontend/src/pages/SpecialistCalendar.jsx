@@ -65,16 +65,14 @@ const SpecialistCalendar = () => {
 
             if (response.data) {
                 const formattedSlots = response.data.map(slot => {
-                    // Use the date directly from the API response
-                    // If it's a full datetime string, extract just the date part
                     let dateStr = slot.date;
                     if (dateStr.includes('T')) {
-                        dateStr = dateStr.split('T')[0]; // Extract just the YYYY-MM-DD part
+                        dateStr = dateStr.split('T')[0];
                     }
                     
                     return {
                         id: slot.id,
-                        date: dateStr, // Use the date string directly
+                        date: dateStr,
                         time: slot.startTime.substring(0, 5),
                         endTime: slot.endTime.substring(0, 5),
                         isBooked: slot.isBooked,
@@ -108,7 +106,6 @@ const SpecialistCalendar = () => {
         return dates;
     };
 
-    // Simple date formatter that returns YYYY-MM-DD without any timezone conversion
     const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -121,28 +118,24 @@ const SpecialistCalendar = () => {
     };
 
     const isTimeSlotSelected = (date, hour) => {
-        // Format the date in YYYY-MM-DD format for comparison
         const dateStr = formatDate(date);
         const timeStr = formatTime(hour);
         return timeSlots.some(slot => {
-            // Ensure we're comparing the same format
             let slotDateStr = slot.date;
             if (slotDateStr.includes('T')) {
-                slotDateStr = slotDateStr.split('T')[0]; // Extract just the YYYY-MM-DD part
+                slotDateStr = slotDateStr.split('T')[0]; 
             }
             return slotDateStr === dateStr && slot.time === timeStr;
         });
     };
 
     const isTimeSlotBooked = (date, hour) => {
-        // Format the date in YYYY-MM-DD format for comparison
         const dateStr = formatDate(date);
         const timeStr = formatTime(hour);
         const slot = timeSlots.find(slot => {
-            // Ensure we're comparing the same format
             let slotDateStr = slot.date;
             if (slotDateStr.includes('T')) {
-                slotDateStr = slotDateStr.split('T')[0]; // Extract just the YYYY-MM-DD part
+                slotDateStr = slotDateStr.split('T')[0];
             }
             return slotDateStr === dateStr && slot.time === timeStr;
         });
@@ -179,12 +172,10 @@ const SpecialistCalendar = () => {
 
                 setTimeSlots(timeSlots.filter(slot => slot.id !== existingSlot.id));
             } else {
-                // Format the date as a simple string in YYYY-MM-DD format
                 const dateStr = formatDate(date);
-                
                 const newSlot = {
                     userId: currentUser.user.id,
-                    date: dateStr, // Send as simple string in YYYY-MM-DD format
+                    date: dateStr,
                     startTime: timeStr,
                     endTime: endTimeStr,
                     isBooked: false,
