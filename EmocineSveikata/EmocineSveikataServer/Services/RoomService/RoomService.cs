@@ -7,9 +7,9 @@ namespace EmocineSveikataServer.Services.RoomService
 {
     public class RoomService : IRoomService
     {
-        ISpecialistTimeSlotRepository _specialistTimeSlotRepository;
-        IUserRepository _userRepository;
-        ISpecialistProfileRepository _specialistProfileRepository;
+        private readonly ISpecialistTimeSlotRepository _specialistTimeSlotRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ISpecialistProfileRepository _specialistProfileRepository;
 
         public RoomService(ISpecialistTimeSlotRepository specialistTimeSlotRepository, IUserRepository userRepository, ISpecialistProfileRepository specialistProfileRepository)
         {
@@ -26,36 +26,20 @@ namespace EmocineSveikataServer.Services.RoomService
 
             List<RoomDto> roomList = [];
 
-            try
+            for(int i = 0; i < users.Count; ++i)
             {
-                for(int i = 0; i < users.Count; ++i)
+                RoomDto roomDto = new()
                 {
-                    RoomDto roomDto = new()
-                    {
-                        Id = specialistTimeSlots[i].Id,
-                        SpecialistName = users[i].Username,
-                        Bio = specialistProfiles[i].Bio,
-                        ProfilePicture = specialistProfiles[i].ProfilePicture,
-                        Date = specialistTimeSlots[i].Date,
-                        StartTime = specialistTimeSlots[i].StartTime,
-                        EndTime = specialistTimeSlots[i].EndTime
-                    };
-
-                    roomList.Add(roomDto);
-                }
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                Console.WriteLine(ex.Message);
-
-                RoomDto errorRoomDto = new()
-                {
-                    Id = 0,
-                    SpecialistName = "SpecialistProfile bug",
-                    Bio = "Bug due to SpecialistProfile not existing for a SpecialistTimeSlot, click `Išsaugoti` in the user settings (`SpecialistProfile.jsx`, line 42)"
+                    Id = specialistTimeSlots[i].Id,
+                    SpecialistName = users[i].Username,
+                    Bio = specialistProfiles[i].Bio,
+                    ProfilePicture = specialistProfiles[i].ProfilePicture,
+                    Date = specialistTimeSlots[i].Date,
+                    StartTime = specialistTimeSlots[i].StartTime,
+                    EndTime = specialistTimeSlots[i].EndTime
                 };
 
-                return [errorRoomDto];
+                roomList.Add(roomDto);
             }
 
             return roomList;
