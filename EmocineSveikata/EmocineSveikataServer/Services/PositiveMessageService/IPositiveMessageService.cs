@@ -4,6 +4,7 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
 {
     public interface IPositiveMessageService
     {
-        PositiveMessageDto GetRandomMessage();
+        Task<PositiveMessageDto> GetRandomMessage();
+        Task<PositiveMessageDto> GetPreferredRandomMessage(string? selectedTopics);
     }
 }

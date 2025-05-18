@@ -1,37 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import './PositiveMessages.css';
 import { v4 as uuid } from 'uuid';
 
-const MESSAGE_INTERVAL = 1 * 10 * 1000; // For testing, only 1 min delay between messages
-const STORAGE_KEY = 'lastMessageTimestamp';
+const MESSAGE_INTERVAL = 1 * 10 * 1000; // For development, only 10 second delay between messages
 
 const PositiveMessages = () => {
+  const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const intervalRef = useRef(null);
 
+  useEffect(() => {
+    if (currentUser && currentUser.user) {
+      intervalRef.current = setInterval(fetchMessage, MESSAGE_INTERVAL);
+      return () => clearInterval(intervalRef.current);
+    }
+  }, [currentUser]);
+
   const fetchMessage = async () => {
     try {
-      const res = await fetch('/api/positiveMessages/random');
-      if (!res.ok) throw new Error('Network error');
-      const { message } = await res.json();
-      if (message) {
+      const response = await fetch(`/api/positiveMessages/${currentUser.user.id}/random`);
+      if (!response.ok) throw new Error('Network error');
+      const { message } = await response.json();
+      if (message && message.length !== 0) {
         const newMsg = { id: uuid(), text: message };
         setMessages((prev) => [...prev, newMsg]);
-        localStorage.setItem(STORAGE_KEY, Date.now().toString());
       }
     } catch (err) {
-      console.error('Failed to fetch:', err);
+      console.error('Failed to fetch positive message:', err);
     }
   };
-
-  useEffect(() => {
-    const lastTs = parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0;
-    const now = Date.now();
-    const delta = now - lastTs;
-
-    intervalRef.current = setInterval(fetchMessage, MESSAGE_INTERVAL);
-    return () => clearInterval(intervalRef.current);
-  }, []);
 
   const closeOne = (id) => {
     setMessages((prev) => prev.filter((m) => m.id !== id));
