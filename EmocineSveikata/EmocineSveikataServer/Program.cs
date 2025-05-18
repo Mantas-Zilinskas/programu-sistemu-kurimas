@@ -6,6 +6,7 @@ using EmocineSveikataServer.Services.AuthService;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
+using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Mapper;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EmocineSveikataServer.Services.PositiveMessageService;
+using EmocineSveikataServer.Services.RoomService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,18 +40,37 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    // Ctikrinam kokia sistema naudojama
+    bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+    
+    if (isWindows)
+    {
+        // Naudojamas SQL Server LocalDB Windows
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        // Naudojamas SQLite Linux/Mac
+        var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLiteConnection") 
+            ?? "Data Source=EmocineSveikata.db";
+        options.UseSqlite(sqliteConnectionString);
+        
+        Console.WriteLine("Using SQLite database on non-Windows platform");
+    }
 });
-
 
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<ISpecialistProfileRepository, SpecialistProfileRepository>();
+builder.Services.AddScoped<ISpecialistTimeSlotRepository, SpecialistTimeSlotRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -139,6 +160,20 @@ catch (Exception ex)
 }
 
 var app = builder.Build();
+
+if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        
+        dbContext.Database.EnsureDeleted();
+        
+        dbContext.Database.EnsureCreated();
+        
+        Console.WriteLine("SQLite database created or verified successfully");
+    }
+}
 
 // === Middleware ===
 // SVARBU: CORS middleware turi but callintas pries kitus middleware

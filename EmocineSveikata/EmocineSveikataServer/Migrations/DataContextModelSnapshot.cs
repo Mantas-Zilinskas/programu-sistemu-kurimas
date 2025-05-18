@@ -43,8 +43,9 @@ namespace EmocineSveikataServer.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
+                    b.PrimitiveCollection<string>("LikedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -75,10 +76,18 @@ namespace EmocineSveikataServer.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
+                    b.PrimitiveCollection<string>("LikedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.PrimitiveCollection<string>("Tags")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -93,6 +102,75 @@ namespace EmocineSveikataServer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Discussions");
+                });
+
+            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelectedTopics")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("SpecialistProfiles");
+                });
+
+            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistTimeSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BookedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SpecialistTimeSlots");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.User", b =>
@@ -139,6 +217,34 @@ namespace EmocineSveikataServer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("EmocineSveikataServer.Models.UserProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelectedTopics")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserProfiles");
+                });
+
             modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
                 {
                     b.HasOne("EmocineSveikataServer.Models.Comment", null)
@@ -149,16 +255,59 @@ namespace EmocineSveikataServer.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("DiscussionId");
 
-                    b.HasOne("EmocineSveikataServer.Models.User", null)
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.Discussion", b =>
                 {
-                    b.HasOne("EmocineSveikataServer.Models.User", null)
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
                         .WithMany("Discussions")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistProfile", b =>
+                {
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
+                        .WithOne("SpecialistProfile")
+                        .HasForeignKey("EmocineSveikataServer.Models.SpecialistProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EmocineSveikataServer.Models.SpecialistTimeSlot", b =>
+                {
+                    b.HasOne("EmocineSveikataServer.Models.User", "BookedByUser")
+                        .WithMany()
+                        .HasForeignKey("BookedByUserId");
+
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookedByUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EmocineSveikataServer.Models.UserProfile", b =>
+                {
+                    b.HasOne("EmocineSveikataServer.Models.User", "User")
+                        .WithOne("UserProfile")
+                        .HasForeignKey("EmocineSveikataServer.Models.UserProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EmocineSveikataServer.Models.Comment", b =>
@@ -176,6 +325,10 @@ namespace EmocineSveikataServer.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Discussions");
+
+                    b.Navigation("SpecialistProfile");
+
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }
