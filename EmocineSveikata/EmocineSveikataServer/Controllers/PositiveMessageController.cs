@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Dto.PositiveMessageDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmocineSveikataServer.Controllers
 {
     [Route("api/positiveMessages")]
     [ApiController]
+    [Authorize]
     public class PositiveMessageController : ControllerBase
     {
         private readonly IPositiveMessageService _positiveMessageService;
