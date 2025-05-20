@@ -7,6 +7,7 @@ namespace EmocineSveikataServer.Dto.DiscussionDto
 		public string Title { get; set; } = string.Empty;
 		public string Content { get; set; } = string.Empty;
 		public List<DiscussionTagEnum>? Tags { get; set; }
+		public int CreatorUserId { get; set; }
 	}
 
 }

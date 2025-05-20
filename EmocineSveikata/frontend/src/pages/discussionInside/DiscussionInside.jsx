@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Comment from './Comment'
 import styles from './DiscussionInside.module.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import { fetchDiscussion } from '../../api/discussionApi.js';
 import { postCommentOnDiscussion } from '../../api/commentApi.js'
 import DiscussionWidget from './DiscussionWidgets';
-import { TextField, Divider, Button, Skeleton } from '@mui/material';
+import { TextField, Divider, Button, Skeleton, Menu, MenuItem } from '@mui/material';
+import { useAuth } from '../../contexts/AuthContext'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
 
 const DiscussionInside = () => {
 
@@ -15,6 +18,9 @@ const DiscussionInside = () => {
   const [loading, setLoading] = useState(true);
   const [newCommentOpen, setNewCommentOpen] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async (id) => {
@@ -34,6 +40,19 @@ const DiscussionInside = () => {
     setNewCommentOpen(false);
     setDiscussion(newData);
   }
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleEdit = () => {
+    navigate(`/discussions/edit/${id}`);
+    setAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -56,9 +75,29 @@ const DiscussionInside = () => {
                 ))}
               </div>
               <section className={styles.discussionCard}>
+                <div className={styles.discussionHeader}>
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <img className={styles.authorPicture} src={discussion.authorPicture}/>
+                    {discussion.authorName}
+                  </span>
+                  { currentUser && currentUser.user.id == discussion.authorId?
+                    (
+                      <>
+                        <MoreHorizIcon className={styles.moreButton} onClick={handleMenuOpen} />
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleMenuClose}
+                        >
+                          <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                        </Menu>
+                      </>
+                    ): null
+                  }
+                </div>
                 <div style={{display: 'flex'}}>
                   <div className={styles.marginRight}>
-                    <DiscussionWidget count={discussion.likes} discussionId={id} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
+                    <DiscussionWidget count={discussion.likes} discussionId={id} initialLiked={discussion.likedByUser} handleReply={() => setNewCommentOpen(!newCommentOpen)} />
                   </div>
                   <div className={styles.content}>
                     <h3 className={styles.discussionTitle}>{discussion.title}</h3>
