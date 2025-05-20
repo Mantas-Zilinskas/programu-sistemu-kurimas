@@ -60,6 +60,7 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 		{
 			var discussion = await _context.Discussions
 			 .Include(d => d.Comments)
+			 .Include(d => d.User)
 			 .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 
 			if (discussion is null)

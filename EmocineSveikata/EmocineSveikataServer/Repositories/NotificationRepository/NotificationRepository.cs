@@ -25,7 +25,6 @@ namespace EmocineSveikataServer.Repositories.NotificationRepository
 		public async Task AddNotificationAsync(Notification notification)
 		{
 			_context.Notifications.Add(notification);
-			await _context.SaveChangesAsync();
 		}
 
 		public async Task SaveChangesAsync()

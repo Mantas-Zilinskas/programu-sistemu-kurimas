@@ -4,6 +4,7 @@ using EmocineSveikataServer.Dto.CommentDtos;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
+using EmocineSveikataServer.Services.NotificationService;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EmocineSveikataServer.Services.CommentService
@@ -11,14 +12,16 @@ namespace EmocineSveikataServer.Services.CommentService
 	public class CommentService : ICommentService
 	{
 		private readonly ICommentRepository _repository;
-		private readonly IMapper _mapper;
 		private readonly IUserRepository _userRepository;
+		private readonly INotificationService _notificationService;
+		private readonly IMapper _mapper;
 
 		public CommentService(ICommentRepository commentRepository, IUserRepository userRepository,
-			IMapper mapper)
+			INotificationService notificationService, IMapper mapper)
 		{
 			_repository = commentRepository;
 			_userRepository = userRepository;
+			_notificationService = notificationService;
 			_mapper = mapper;
 		}
 
@@ -32,6 +35,7 @@ namespace EmocineSveikataServer.Services.CommentService
 				if (!comment.LikedBy.Contains(userId))
 				{
 					comment.LikedBy.Add(userId);
+					AddNotification(user.Username, comment.User.Id, liked: true, link: $"discussions/{comment.DiscussionId}");
 				}
 				else
 				{
@@ -53,6 +57,10 @@ namespace EmocineSveikataServer.Services.CommentService
 			user.Comments.Add(reply);
 			reply.DiscussionId = discussionId;
 			comment.Replies.Add(reply);
+
+			if (comment.User.Id != userId)
+				AddNotification(user.Username, comment.User.Id, liked: false, link: $"discussions/{comment.DiscussionId}");
+
 			await CreateCommentAsync(reply);
 			comment = await _repository.GetCommentWithRelationsAsync(commentId);
 			return _mapper.Map<CommentDisplayDto>(comment);
@@ -96,6 +104,19 @@ namespace EmocineSveikataServer.Services.CommentService
 			}
 			comments.RemoveAll(c => c.IsDeleted);
 			return comments;
+		}
+
+		private async void AddNotification(string username, int recipientId,
+			bool liked = false, string link = "")
+		{
+			var message = "";
+
+			if (liked)
+				message += username + " has liked your comment.";
+			else
+				message += username + " has replied to your comment.";
+
+			await _notificationService.CreateNotificationAsync(message, recipientId, link);
 		}
 	}
 }

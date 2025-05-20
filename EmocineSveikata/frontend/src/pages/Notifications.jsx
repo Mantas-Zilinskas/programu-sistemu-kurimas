@@ -12,7 +12,6 @@ const NotificationsPage = () => {
       try {
         const data = await fetchNotifications();
         setNotifications(data);
-        //await markNotificationsRead();
       } catch (err) {
         console.error('Failed to load notifications', err);
       }
@@ -29,7 +28,7 @@ const NotificationsPage = () => {
 		notifications.map((n) => (
 		  <div
 			key={n.id}
-			onClick={() => navigate(n.link)}
+			onClick={() => navigate(`/${n.link}`)}
 			className={`${styles.notificationCard} ${!n.isRead ? styles.unread : ''}`}
 		  >
 			<span className={styles.notificationMessage}>{n.message}</span>

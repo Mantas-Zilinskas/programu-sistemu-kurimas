@@ -40,16 +40,16 @@ const Navbar = () => {
                     >
                         Kambariai
                    </Link>
-					<Link
-                        to="/notifications"
-                        className={`navbar-link ${location.pathname === '/notifications' ? 'navbar-link-active' : ''}`}
-                    >
-                        Pranešimai
-                    </Link>
                 </div>
                 <div className="navbar-auth">
                     {currentUser && currentUser.user ? (
                         <>
+							<Link
+								to="/notifications"
+								className={`navbar-link ${location.pathname === '/notifications' ? 'navbar-link-active' : ''}`}
+							>
+								Pranešimai
+							</Link>
                             <span className="navbar-user">
                                 <Link
                                     to={currentUser.user.role.toLowerCase() === 'specialistas' ? "/specialistprofile" : "/userprofile"}
