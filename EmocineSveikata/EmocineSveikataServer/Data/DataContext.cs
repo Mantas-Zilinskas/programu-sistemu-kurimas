@@ -16,8 +16,9 @@ namespace EmocineSveikataServer.Data
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<SpecialistProfile> SpecialistProfiles { get; set; }
         public DbSet<SpecialistTimeSlot> SpecialistTimeSlots { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
