@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import './PositiveMessages.css';
+import { fetchPositiveMessage } from '../api/positiveMessagesApi.js';
 import { v4 as uuid } from 'uuid';
 
 const MESSAGE_INTERVAL = 1 * 10 * 1000; // For development, only 10 second delay between messages
@@ -19,9 +20,7 @@ const PositiveMessages = () => {
 
   const fetchMessage = async () => {
     try {
-      const response = await fetch(`/api/positiveMessages/${currentUser.user.id}/random`);
-      if (!response.ok) throw new Error('Network error');
-      const { message } = await response.json();
+      const { message } = await fetchPositiveMessage(currentUser);
       if (message && message.length !== 0) {
         const newMsg = { id: uuid(), text: message };
         setMessages((prev) => [...prev, newMsg]);
