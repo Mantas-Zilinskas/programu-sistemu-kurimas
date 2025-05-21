@@ -14,6 +14,7 @@ import PrivateRoute from './components/PrivateRoute';
 import SpecialistCalendar from './pages/SpecialistCalendar';
 import Rooms from './pages/rooms/Rooms';
 import DiscussionsEdit from './pages/discussionsEdit/DiscussionsEdit';
+import Notifications from './pages/Notifications';
 import './App.css';
 
 function App() {
@@ -31,7 +32,8 @@ function App() {
                             <Route path="/rooms" element={<Rooms />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
-
+							<Route path="/notifications" element={<Notifications />} />
+							
                             {/* Protected Routes */}
                             <Route
                                 path="/specialistprofile"

@@ -7,11 +7,8 @@ using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
 using EmocineSveikataServer.Services.CommentService;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using EmocineSveikataServer.Services.NotificationService;
 
 namespace EmocineSveikataServer.Services.DiscussionService
 {
@@ -20,13 +17,16 @@ namespace EmocineSveikataServer.Services.DiscussionService
 		private readonly ICommentService _commentService;
 		private readonly IDiscussionRepository _repository;
 		private readonly IUserRepository _userRepository;
+		private readonly INotificationService _notificationService;
 		private readonly IMapper _mapper;
+
 		public DiscussionService(IDiscussionRepository repository, ICommentService commentService,
-		 IUserRepository userRepository, IMapper mapper)
+			IUserRepository userRepository, INotificationService notificationService, IMapper mapper)
 		{
 			_repository = repository;
 			_commentService = commentService;
 			_userRepository = userRepository;
+			_notificationService = notificationService;
 			_mapper = mapper;
 		}
 
@@ -110,6 +110,10 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			discussion.Comments.Add(comment);
 			user.Comments.Add(comment);
 			FixReplies(discussion);
+
+			if (discussion.User.Id != user.Id)
+				AddNotification(user.Username, discussion.User.Id, link: $"discussions/{discussionId}");
+
 			await _commentService.CreateCommentAsync(comment);
 			await _repository.SaveChangesAsync();
 			discussion = await _repository.GetDiscussionWithRelationsAsync(discussionId);
@@ -126,6 +130,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
 				if (!discussion.LikedBy.Contains(userId))
 				{
 					discussion.LikedBy.Add(userId);
+					AddNotification(user.Username, discussion.User.Id, liked: true, link: $"discussions/{discussionId}");
 				}
 				else
 				{
@@ -171,6 +176,19 @@ namespace EmocineSveikataServer.Services.DiscussionService
 
 			discussionDto.LikedByUser = discussion.LikedBy.Contains(userId);
 			return discussionDto;
+		}
+
+		private async void AddNotification(string username, int recipientId, 
+			bool liked = false, string link = "")
+		{
+			var message = "";
+
+			if (liked)
+				message += username + " patiko jūsų diskusija.";
+			else
+				message += username + " atsakė į jūsų diskusiją.";
+
+			await _notificationService.CreateNotificationAsync(message, recipientId, link);
 		}
 	}
 }
