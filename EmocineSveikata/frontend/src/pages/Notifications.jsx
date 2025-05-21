@@ -12,6 +12,7 @@ const NotificationsPage = () => {
       try {
         const data = await fetchNotifications();
         setNotifications(data);
+		await markNotificationsRead();
       } catch (err) {
         console.error('Failed to load notifications', err);
       }
