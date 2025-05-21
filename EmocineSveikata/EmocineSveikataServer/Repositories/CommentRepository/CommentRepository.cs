@@ -21,7 +21,10 @@ public class CommentRepository : ICommentRepository
 
 	public async Task<Comment> GetCommentAsync(int id)
 	{
-		var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
+		var comment = await _context.Comments
+						.Include(c => c.User)
+						.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
+
 		if (comment is null)
 		{
 			throw new KeyNotFoundException("Comment not found");
