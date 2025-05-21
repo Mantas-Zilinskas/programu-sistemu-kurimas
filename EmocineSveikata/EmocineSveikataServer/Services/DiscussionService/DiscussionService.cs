@@ -110,7 +110,10 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			discussion.Comments.Add(comment);
 			user.Comments.Add(comment);
 			FixReplies(discussion);
-			AddNotification(user.Username, discussion.User.Id, link: $"discussions/{discussionId}");
+
+			if (discussion.User.Id != user.Id)
+				AddNotification(user.Username, discussion.User.Id, link: $"discussions/{discussionId}");
+
 			await _commentService.CreateCommentAsync(comment);
 			await _repository.SaveChangesAsync();
 			discussion = await _repository.GetDiscussionWithRelationsAsync(discussionId);
@@ -181,9 +184,9 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			var message = "";
 
 			if (liked)
-				message += username + " has liked your discussion.";
+				message += username + " patiko jūsų diskusija.";
 			else
-				message += username + " has replied to your discussion.";
+				message += username + " atsakė į jūsų diskusiją.";
 
 			await _notificationService.CreateNotificationAsync(message, recipientId, link);
 		}

@@ -112,9 +112,9 @@ namespace EmocineSveikataServer.Services.CommentService
 			var message = "";
 
 			if (liked)
-				message += username + " has liked your comment.";
+				message += username + " patiko jūsų komentaras.";
 			else
-				message += username + " has replied to your comment.";
+				message += username + " atsakė į jūsų komentarą.";
 
 			await _notificationService.CreateNotificationAsync(message, recipientId, link);
 		}
