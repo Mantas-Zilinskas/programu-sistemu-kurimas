@@ -14,6 +14,7 @@ import PrivateRoute from './components/PrivateRoute';
 import SpecialistCalendar from './pages/SpecialistCalendar';
 import Rooms from './pages/rooms/Rooms';
 import DiscussionsEdit from './pages/discussionsEdit/DiscussionsEdit';
+import PositiveMessages from './components/PositiveMessages';
 import Notifications from './pages/Notifications';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
             <Router>
                 <div className="app-container">
                     <Navbar />
+                    <PositiveMessages />
                     <main className="main-content">
                         <Routes>
                             <Route path="/" element={<Home />} />
