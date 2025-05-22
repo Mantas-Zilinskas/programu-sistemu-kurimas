@@ -17,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Services.RoomService;
+using EmocineSveikataServer.Services.NotificationService;
+using EmocineSveikataServer.Repositories.NotificationRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,12 +67,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<ISpecialistProfileRepository, SpecialistProfileRepository>();
 builder.Services.AddScoped<ISpecialistTimeSlotRepository, SpecialistTimeSlotRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
