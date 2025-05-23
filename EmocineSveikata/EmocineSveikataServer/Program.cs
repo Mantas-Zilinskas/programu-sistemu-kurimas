@@ -34,14 +34,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Logs can be found in '\EmocineSveikataServer\bin\Debug\net8.0\ES_LOG_*.txt'
-var baseDir = AppContext.BaseDirectory;
-var logFilePath = Path.Combine(baseDir, "ES_LOG_.txt");
-
+// Logs can be found in '\EmocineSveikataServer\Logs\ES_LOG_*.txt'.
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console()
-    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+    .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
 builder.Services.AddControllers(options =>
