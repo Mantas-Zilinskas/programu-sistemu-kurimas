@@ -19,6 +19,8 @@ using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Services.RoomService;
 using EmocineSveikataServer.Services.NotificationService;
 using EmocineSveikataServer.Repositories.NotificationRepository;
+using EmocineSveikataServer.Filters;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+// Logs can be found in '\EmocineSveikataServer\Logs\ES_LOG_*.txt'.
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<LoggingActionFilter>();
+})
+.AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // naudojama API enums vietoj ids
 });
@@ -245,4 +256,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch(Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.Information("Closing web host");
+    Log.CloseAndFlush();
+}
