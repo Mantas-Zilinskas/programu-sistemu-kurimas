@@ -4,7 +4,7 @@ import './PositiveMessages.css';
 import { fetchPositiveMessage } from '../api/positiveMessagesApi.js';
 import { v4 as uuid } from 'uuid';
 
-const MESSAGE_INTERVAL = 1 * 10 * 1000; // For development, only 10 second delay between messages
+const MESSAGE_INTERVAL = 10 * 60 * 1000; // 10 min delay between messages
 
 const PositiveMessages = () => {
   const { currentUser } = useAuth();
