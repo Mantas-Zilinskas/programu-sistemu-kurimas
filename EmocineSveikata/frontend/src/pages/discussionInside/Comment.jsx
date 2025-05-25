@@ -59,7 +59,7 @@ const Comment = ({comment, discussionId}) => {
           </div>
           <p>{commentData.content}</p>
         </div>
-          {newReplyOpen ? (
+          {newReplyOpen && currentUser ? (
           <>
             <Divider className={commentStyles.horizontalDivider} />
             <TextField
