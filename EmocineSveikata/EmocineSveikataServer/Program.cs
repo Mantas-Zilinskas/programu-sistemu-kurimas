@@ -16,9 +16,12 @@ using EmocineSveikataServer.Services.Meets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Services.RoomService;
 using EmocineSveikataServer.Services.NotificationService;
 using EmocineSveikataServer.Repositories.NotificationRepository;
+using EmocineSveikataServer.Filters;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +36,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+// Logs can be found in '\EmocineSveikataServer\Logs\ES_LOG_*.txt'.
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<LoggingActionFilter>();
+})
+.AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // naudojama API enums vietoj ids
 });
@@ -74,8 +86,15 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddScoped<GoogleMeetService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Notification service using Strategy Design Pattern
+// Utilize it by changing "appsettings.json".NotificationSettings.Type from the default "Regular" to "Hearts" to add hearts to notifications... for the extra user comfort!
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<NotificationServiceHearts>();
+builder.Services.AddScoped<INotificationServiceFactory, NotificationServiceFactory>();
+builder.Services.AddScoped(sp => sp.GetRequiredService<INotificationServiceFactory>().Create());
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -240,4 +259,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch(Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.Information("Closing web host");
+    Log.CloseAndFlush();
+}
