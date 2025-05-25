@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Services.RoomService;
 using EmocineSveikataServer.Services.NotificationService;
 using EmocineSveikataServer.Repositories.NotificationRepository;
@@ -71,6 +72,7 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 
 // Notification service using Strategy Design Pattern
