@@ -7,7 +7,8 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
         Task<List<SpecialistTimeSlot>> GetCurrentlyAvailableTimeSlots();
         Task<List<SpecialistTimeSlot>> GetTimeSlotsBySpecialistId(int specialistId);
         Task<List<SpecialistTimeSlot>> GetTimeSlotsByDateRange(int specialistId, DateTime startDate, DateTime endDate);
-        Task<SpecialistTimeSlot?> GetTimeSlotById(int timeSlotId);
+		Task<List<SpecialistTimeSlot>> GetBookedTimeSlotsByUserId(int userId);
+		Task<SpecialistTimeSlot?> GetTimeSlotById(int timeSlotId);
         Task<SpecialistTimeSlot> CreateTimeSlot(SpecialistTimeSlot timeSlot);
         Task<SpecialistTimeSlot> UpdateTimeSlot(SpecialistTimeSlot timeSlot);
         Task<bool> DeleteTimeSlot(int timeSlotId);

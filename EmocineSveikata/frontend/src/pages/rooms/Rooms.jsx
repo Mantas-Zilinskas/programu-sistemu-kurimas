@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAvailableRooms, bookRoom } from '../../api/roomApi.js';
+import { fetchAvailableRooms, bookRoom, getMyBookedRooms } from '../../api/roomApi.js';
 import './Rooms.css';
 
 const Rooms = () => {
-  const [rooms, setRooms] = useState([]);
+  const [availableRooms, setAvailableRooms] = useState([]);
+  const [bookedRooms, setBookedRooms] = useState([]);
+  const [activeTab, setActiveTab] = useState('available');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingStatus, setBookingStatus] = useState({});
 
   useEffect(() => {
-    loadRooms();
+    loadData();
   }, []);
 
-  const loadRooms = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const data = await fetchAvailableRooms();
-      setRooms(data);
+      const [availableData, bookedData] = await Promise.all([
+        fetchAvailableRooms(),
+        getMyBookedRooms().catch(() => [])
+      ]);
+      setAvailableRooms(availableData);
+      setBookedRooms(bookedData);
     } catch (err) {
       setError('Failed to fetch rooms');
     } finally {
@@ -38,7 +44,7 @@ const Rooms = () => {
         } 
       }));
       
-      await loadRooms();
+      await loadData();
       
     } catch (err) {
       let errorMessage = 'Rezervacija nepavyko.';
@@ -61,8 +67,14 @@ const Rooms = () => {
     }
   };
 
-  const formatDate = (date) => date.split('T')[0];
+  const formatDate = (date) => new Date(date).toLocaleDateString('lt-LT');
   const formatTime = (time) => time.substring(0, 5);
+  const formatDateTime = (dateTime) => new Date(dateTime).toLocaleString('lt-LT');
+
+  const isUpcoming = (date, startTime) => {
+    const roomDateTime = new Date(`${date.split('T')[0]}T${startTime}`);
+    return roomDateTime > new Date();
+  };
 
   const getBookingStatusDisplay = (roomId) => {
     const status = bookingStatus[roomId];
@@ -70,7 +82,7 @@ const Rooms = () => {
     if (!status) return null;
     
     if (status === 'loading') {
-      return <p className="booking-loading">⏳ Booking...</p>;
+      return <p className="booking-loading">⏳ Rezervuojama...</p>;
     }
     
     if (status.status === 'success') {
@@ -110,26 +122,128 @@ const Rooms = () => {
     return <div className="error-message">Error: {error}</div>;
   }
 
+  const upcomingBookedRooms = bookedRooms.filter(room => isUpcoming(room.date, room.startTime));
+  const pastBookedRooms = bookedRooms.filter(room => !isUpcoming(room.date, room.startTime));
+
   return (
     <div className="rooms-container">
       <div className="rooms-top">
-        <h1 className="rooms-title">Galimi kambariai</h1>
-      </div>
-      {rooms.map((room) => (
-        <div key={room.id} className="room-card" onClick={() => handleBookRoom(room.id)}>
-          <div className="room-header">
-            <h2 className="room-creator-name">{room.specialistName}</h2>
-            <div className="profile-picture">
-              <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
-            </div>
-            <h4 className="room-time">
-              {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
-            </h4>
-          </div>
-          <p className="room-creator-bio">{room.bio}</p>
-          {getBookingStatusDisplay(room.id)}
+        <h1 className="rooms-title">Kambariai</h1>
+        
+        {/* Tab Navigation */}
+        <div className="tab-navigation">
+          <button 
+            className={`tab-button ${activeTab === 'available' ? 'active' : ''}`}
+            onClick={() => setActiveTab('available')}
+          >
+            Galimi kambariai ({availableRooms.length})
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'booked' ? 'active' : ''}`}
+            onClick={() => setActiveTab('booked')}
+          >
+            Mano kambariai ({bookedRooms.length})
+          </button>
         </div>
-      ))}
+      </div>
+
+      {/* Available Rooms Tab */}
+      {activeTab === 'available' && (
+        <div className="tab-content">
+          {availableRooms.length === 0 ? (
+            <div className="no-rooms">
+              <p>Šiuo metu nėra galimų kambarių.</p>
+            </div>
+          ) : (
+            availableRooms.map((room) => (
+              <div key={room.id} className="room-card clickable" onClick={() => handleBookRoom(room.id)}>
+                <div className="room-header">
+                  <h2 className="room-creator-name">{room.specialistName}</h2>
+                  <div className="profile-picture">
+                    <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
+                  </div>
+                  <h4 className="room-time">
+                    {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
+                  </h4>
+                </div>
+                <p className="room-creator-bio">{room.bio}</p>
+                {getBookingStatusDisplay(room.id)}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Booked Rooms Tab */}
+      {activeTab === 'booked' && (
+        <div className="tab-content">
+          {bookedRooms.length === 0 ? (
+            <div className="no-rooms">
+              <p>Neturite rezervuotų kambarių.</p>
+            </div>
+          ) : (
+            <>
+              {/* Upcoming Meetings */}
+              {upcomingBookedRooms.length > 0 && (
+                <div className="booked-section">
+                  <h2 className="section-title">Artėjantys susitikimai</h2>
+                  {upcomingBookedRooms.map((room) => (
+                    <div key={room.id} className="room-card booked-room upcoming">
+                      <div className="room-header">
+                        <h3 className="room-creator-name">{room.specialistName}</h3>
+                        <div className="profile-picture">
+                          <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
+                        </div>
+                        <h4 className="room-time">
+                          {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
+                        </h4>
+                      </div>
+                      <p className="room-creator-bio">{room.bio}</p>
+                      <div className="booking-info">
+                        <p className="booked-at">Rezervuota: {formatDateTime(room.bookedAt)}</p>
+                        {room.meetLink && (
+                          <a 
+                            href={room.meetLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="meet-link-button"
+                          >
+                            Prisijungti prie susitikimo
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Past Meetings */}
+              {pastBookedRooms.length > 0 && (
+                <div className="booked-section">
+                  <h2 className="section-title">Praėję susitikimai</h2>
+                  {pastBookedRooms.map((room) => (
+                    <div key={room.id} className="room-card booked-room past">
+                      <div className="room-header">
+                        <h3 className="room-creator-name">{room.specialistName}</h3>
+                        <div className="profile-picture">
+                          <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
+                        </div>
+                        <h4 className="room-time">
+                          {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
+                        </h4>
+                      </div>
+                      <p className="room-creator-bio">{room.bio}</p>
+                      <div className="booking-info">
+                        <p className="booked-at">Rezervuota: {formatDateTime(room.bookedAt)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

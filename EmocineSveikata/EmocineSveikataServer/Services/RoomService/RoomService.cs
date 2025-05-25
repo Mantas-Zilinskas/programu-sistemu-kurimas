@@ -49,6 +49,42 @@ namespace EmocineSveikataServer.Services.RoomService
             return roomList;
         }
 
+		public async Task<List<BookedRoomDto>> GetUserBookedRoomsAsync(int userId)
+		{
+			var bookedTimeSlots = await _specialistTimeSlotRepository.GetBookedTimeSlotsByUserId(userId);
+
+			var specialistUserIds = bookedTimeSlots.Select(ts => ts.UserId).ToList();
+			var specialistUsers = await _userRepository.GetUsersByIds(specialistUserIds);
+
+			var specialistProfiles = await _specialistProfileRepository.GetSpecialistProfilesByUserIds(specialistUserIds);
+
+			List<BookedRoomDto> bookedRooms = [];
+
+			for (int i = 0; i < bookedTimeSlots.Count; i++)
+			{
+				var timeSlot = bookedTimeSlots[i];
+				var specialist = specialistUsers.FirstOrDefault(u => u.Id == timeSlot.UserId);
+				var profile = specialistProfiles.FirstOrDefault(p => p.UserId == timeSlot.UserId);
+
+				var bookedRoom = new BookedRoomDto
+				{
+					Id = timeSlot.Id,
+					SpecialistName = specialist?.Username ?? "Unknown",
+					Bio = profile?.Bio ?? "",
+					ProfilePicture = profile?.ProfilePicture,
+					Date = timeSlot.Date,
+					StartTime = timeSlot.StartTime,
+					EndTime = timeSlot.EndTime,
+					BookedAt = timeSlot.CreatedAt,
+					MeetLink = timeSlot.MeetLink
+				};
+
+				bookedRooms.Add(bookedRoom);
+			}
+
+			return bookedRooms.OrderBy(br => br.Date).ThenBy(br => br.StartTime).ToList();
+		}
+
 		public async Task<string> BookRoomAsync(int roomId, int userId)
 		{
 			var timeSlot = await _specialistTimeSlotRepository.GetTimeSlotById(roomId);
@@ -88,6 +124,7 @@ namespace EmocineSveikataServer.Services.RoomService
 				timeSlot.BookedByUserId = userId;
 				timeSlot.BookedByUser = user;
 				timeSlot.IsBooked = true;
+				timeSlot.MeetLink = meetLink;
 
 				await _specialistTimeSlotRepository.UpdateTimeSlot(timeSlot);
 

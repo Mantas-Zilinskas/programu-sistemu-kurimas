@@ -31,4 +31,21 @@ const bookRoom = async (roomId) => {
   }
 };
 
-export { fetchAvailableRooms, bookRoom };
+const getMyBookedRooms = async () => {
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  if (!token) throw new Error('Unauthorized');
+  
+  try {
+    const response = await axios.get('/api/Room/my-bookings', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching booked rooms:', error);
+    throw error;
+  }
+};
+
+export { fetchAvailableRooms, bookRoom, getMyBookedRooms };

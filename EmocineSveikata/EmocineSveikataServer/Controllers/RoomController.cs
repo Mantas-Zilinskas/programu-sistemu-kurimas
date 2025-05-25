@@ -25,7 +25,23 @@ namespace EmocineSveikataServer.Controllers
             return Ok(rooms);
         }
 
-        [HttpPost("book/{roomId}")]
+		[HttpGet("my-bookings")]
+		[Authorize]
+		public async Task<ActionResult<List<BookedRoomDto>>> GetBookedRooms()
+		{
+			try
+			{
+				var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+				var bookedRooms = await _roomService.GetUserBookedRoomsAsync(userId);
+				return Ok(bookedRooms);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Failed to fetch booked rooms", error = ex.Message });
+			}
+		}
+
+		[HttpPost("book/{roomId}")]
         [Authorize]
         public async Task<IActionResult> BookRoom(int roomId)
 		{
