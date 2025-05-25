@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EmocineSveikataServer.Services.PositiveMessageService;
 using EmocineSveikataServer.Services.RoomService;
 using EmocineSveikataServer.Services.NotificationService;
 using EmocineSveikataServer.Repositories.NotificationRepository;
@@ -82,8 +83,15 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Notification service using Strategy Design Pattern
+// Utilize it by changing "appsettings.json".NotificationSettings.Type from the default "Regular" to "Hearts" to add hearts to notifications... for the extra user comfort!
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<NotificationServiceHearts>();
+builder.Services.AddScoped<INotificationServiceFactory, NotificationServiceFactory>();
+builder.Services.AddScoped(sp => sp.GetRequiredService<INotificationServiceFactory>().Create());
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
