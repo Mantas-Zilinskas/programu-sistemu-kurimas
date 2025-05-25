@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using EmocineSveikataServer.Dto.RoomDtos;
 using EmocineSveikataServer.Services.RoomService;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -22,5 +24,35 @@ namespace EmocineSveikataServer.Controllers
 
             return Ok(rooms);
         }
-    }
+
+        [HttpPost("book/{roomId}")]
+        [Authorize]
+        public async Task<IActionResult> BookRoom(int roomId)
+		{
+			try
+			{
+				var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+				var meetLink = await _roomService.BookRoomAsync(roomId, userId);
+
+				return Ok(new
+				{
+					message = "Kambarys rezervuotas!",
+					meetLink
+				});
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+			catch (InvalidOperationException ex)
+			{
+				return Conflict(new { message = ex.Message });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Rezervacija nepavyko: ", error = ex.Message });
+			}
+		}
+	}
 }

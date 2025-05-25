@@ -29,7 +29,6 @@ namespace EmocineSveikataServer.Models
         
         [ForeignKey("BookedByUserId")]
         public User? BookedByUser { get; set; }
-        
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

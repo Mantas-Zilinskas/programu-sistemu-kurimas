@@ -15,7 +15,7 @@ namespace EmocineSveikataServer.Services.Meets
             _config = config;
         }
 
-        public async Task<string> CreateMeetAsync()
+        public async Task<string> CreateMeetAsync(DateTime start, DateTime end)
         {
             var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets
@@ -41,12 +41,12 @@ namespace EmocineSveikataServer.Services.Meets
                 Summary = "Privatus Pokalbis",
                 Start = new EventDateTime
                 {
-                    DateTime = DateTime.Now.AddMinutes(5),
+                    DateTime = start,
                     TimeZone = "Europe/Vilnius"
                 },
                 End = new EventDateTime
                 {
-                    DateTime = DateTime.Now.AddMinutes(30),
+                    DateTime = end,
                     TimeZone = "Europe/Vilnius"
                 },
                 ConferenceData = new ConferenceData

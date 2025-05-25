@@ -24,6 +24,7 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
                     ts.Date > currentDate || // Future dates
                     (ts.Date == currentDate && ts.EndTime > currentTime) // Today and not yet ended
                 )
+                .Where(ts => !ts.IsBooked)
                 .OrderBy(ts => ts.Date)
                 .ThenBy(ts => ts.StartTime)
                 .ToListAsync();
