@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDiscussionsNew } from '../contexts/DiscussionNewContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './DiscussionsNew.css';
 
 const DiscussionsNew = () => {
   const { tagsArray, setTagsArray, error, createDiscussion } = useDiscussionsNew();
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '', tags: [] });
   const [selectedTags, setSelectedTags] = useState([]);
   const [currentTag, setCurrentTag] = useState("");
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+    }
+  }, [currentUser, navigate]);
 
   const handleAddTag = () => {
     if (currentTag && tagsArray.includes(currentTag)) {
@@ -24,6 +34,14 @@ const DiscussionsNew = () => {
       window.location.href = "/discussions";
     }
   };
+
+  if (!currentUser) {
+    return (
+      <div className="error-message">
+        You must be logged in to create a discussion.
+      </div>
+    );
+  }
 
   if (error) {
     return (

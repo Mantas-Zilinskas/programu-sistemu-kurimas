@@ -6,6 +6,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import commentStyles from './Comment.module.css';
 import styles from './DiscussionInside.module.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Comment = ({comment, discussionId}) => {
 
@@ -13,6 +14,7 @@ const Comment = ({comment, discussionId}) => {
   const [newReplyOpen, setNewReplyOpen] = useState(false);
   const [newReply, setNewReply] = useState('');
   const [repliesOpen, setRepliesOpen] = useState(false);
+  const { currentUser } = useAuth();
 
   const handleSubmit = async () => {
     let newData = await replyToComment(discussionId, commentData.id, newReply);
@@ -59,7 +61,7 @@ const Comment = ({comment, discussionId}) => {
           </div>
           <p>{commentData.content}</p>
         </div>
-          {newReplyOpen ? (
+          {newReplyOpen && currentUser ? (
           <>
             <Divider className={commentStyles.horizontalDivider} />
             <TextField

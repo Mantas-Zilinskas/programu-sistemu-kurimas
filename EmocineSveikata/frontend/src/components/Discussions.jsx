@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDiscussions } from '../contexts/DiscussionContext';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Discussions.css';
 
 const Discussions = () => {
   const { discussions, tagsArray, selectedTag, setSelectedTag, isPopular, setIsPopular, loading, error } = useDiscussions();
   const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   if (loading) {
@@ -29,9 +31,11 @@ const Discussions = () => {
     <div className="discussions-container">
       <div className="discussions-top">
         <h1 className="discussions-title">Naujausios diskusijos</h1>
-        <Link to="/discussions/new" className="new-discussion-button">
-          Nauja diskusija
-        </Link>
+        {currentUser && (
+          <Link to="/discussions/new" className="new-discussion-button">
+            Nauja diskusija
+          </Link>
+        )}
       </div>
 
       <div className="discussions-filters">

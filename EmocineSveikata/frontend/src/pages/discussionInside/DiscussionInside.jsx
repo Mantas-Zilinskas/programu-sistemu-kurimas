@@ -104,7 +104,7 @@ const DiscussionInside = () => {
                     <div>{discussion.content}</div>
                   </div>
                 </div>
-                {newCommentOpen ? (
+                {newCommentOpen && currentUser ? (
                   <>
                     <Divider className={styles.horizontalDivider} />
                     <TextField
