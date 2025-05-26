@@ -1,12 +1,12 @@
-ï»¿namespace EmocineSveikataServer.Enums
+namespace EmocineSveikataServer.Enums
 {
     public enum DiscussionTagEnum
     {
-        Depression,
-        MentalHealth,
+        Depresija,
+        PsichinëSveikata,
         ADHD,
-        Therapy,
-        Relationships,
-        PhysicalHealth
+        Terapija,
+        Santykiai,
+        FizinëSveikata
     }
 }
