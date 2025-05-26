@@ -111,7 +111,6 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 
 			_context.Entry(existing).Property(d => d.RowVersion).OriginalValue = discussion.RowVersion;
 
-			await _context.SaveChangesAsync();
 			try
 			{
 				await _context.SaveChangesAsync();
@@ -119,7 +118,7 @@ namespace EmocineSveikataServer.Repositories.DiscussionRepository
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				throw new InvalidOperationException("Concurrency conflict: the discussion was updated or deleted by another user.");
+				throw;
 			}
 		}
 

@@ -65,7 +65,7 @@ const Comment = ({comment, discussionId}) => {
           <>
             <Divider className={commentStyles.horizontalDivider} />
             <TextField
-              label="Reply"
+              label="Atsakyti"
               multiline
               rows={3}
               variant="outlined"
@@ -78,7 +78,7 @@ const Comment = ({comment, discussionId}) => {
               disabled={!newReply}
               sx={{ margin: '1em 0', backgroundColor: '#CB997E', '&:hover': { backgroundColor: 'rgba(203, 153, 126, 0.9)' } }}
               onClick={handleSubmit}>
-              Submit
+              Pateikti
             </Button>
           </>
         ) : (

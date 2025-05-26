@@ -89,7 +89,7 @@ const DiscussionInside = () => {
                           open={Boolean(anchorEl)}
                           onClose={handleMenuClose}
                         >
-                          <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                          <MenuItem onClick={handleEdit}>Redaguoti</MenuItem>
                         </Menu>
                       </>
                     ): null
@@ -108,7 +108,7 @@ const DiscussionInside = () => {
                   <>
                     <Divider className={styles.horizontalDivider} />
                     <TextField
-                      label="Comment"
+                      label="Komentuoti"
                       multiline
                       rows={3}
                       variant="outlined"
@@ -121,7 +121,7 @@ const DiscussionInside = () => {
                       disabled={!newComment}
                       sx={{ marginTop: '1em', backgroundColor: '#CB997E', '&:hover': { backgroundColor: 'rgba(203, 153, 126, 0.9)' } }}
                       onClick={handleSubmit}>
-                      Submit
+                      Pateikti
                     </Button>
                   </>
                 ) : (
@@ -131,7 +131,7 @@ const DiscussionInside = () => {
             </>
           )
         }
-        <p className={styles.negativeTopMargin}>Comments:</p>
+        <p className={styles.negativeTopMargin}>Komentarai:</p>
         <section>
           {loading || discussion.comments.map((comment) => (
             <Comment key={comment.id} comment={comment} discussionId={id} />

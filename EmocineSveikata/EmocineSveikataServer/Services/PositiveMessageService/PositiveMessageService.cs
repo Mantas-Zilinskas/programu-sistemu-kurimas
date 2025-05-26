@@ -8,14 +8,14 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
     {
         private readonly Dictionary<string, List<string>> positiveMessages = new()
         {
-            { DiscussionTagEnum.Depression.ToString(),
+            { DiscussionTagEnum.Depresija.ToString(),
                 [
                     "Tu tikrai patirsi laimæ!",
                     "Tavo ateitis bus nuostabi!",
                     "Tau viskas pavyks!",
                 ]
             },
-            { DiscussionTagEnum.MentalHealth.ToString(),
+            { DiscussionTagEnum.PsichinëSveikata.ToString(),
                 [
                     "Nebijok pradëti ið naujo!",
                     "Tu stipresnis, nei manai!",
@@ -26,19 +26,19 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
                     "Niekada nepasiduok!",
                 ]
             },
-            { DiscussionTagEnum.Therapy.ToString(),
+            { DiscussionTagEnum.Terapija.ToString(),
                 [
                     "Tu gali pasiekti savo svajones!",
                     "Tu gali pasiekti bet kà!",
                     "Tavo pastangos vertingos!",
                 ]
             },
-            { DiscussionTagEnum.Relationships.ToString(),
+            { DiscussionTagEnum.Santykiai.ToString(),
                 [
                     "Neleisk niekam tavæs stumdyti!",
                 ]
             },
-            { DiscussionTagEnum.PhysicalHealth.ToString(),
+            { DiscussionTagEnum.FizinëSveikata.ToString(),
                 [
                     "Iððûkiai tik sustiprins tave!",
                     "Tu gali nugalëti visas kliûtis!",
