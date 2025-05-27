@@ -3,6 +3,8 @@ using EmocineSveikataServer.Data;
 using EmocineSveikataServer.Services.DiscussionService;
 using EmocineSveikataServer.Services.CommentService;
 using EmocineSveikataServer.Services.AuthService;
+using EmocineSveikataServer.Services.SmsService;
+using EmocineSveikataServer.Configuration;
 using EmocineSveikataServer.Repositories.DiscussionRepository;
 using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
@@ -88,10 +90,33 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 
 // Notification service using Strategy Design Pattern
 // Utilize it by changing "appsettings.json".NotificationSettings.Type from the default "Regular" to "Hearts" to add hearts to notifications... for the extra user comfort!
-builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<EmocineSveikataServer.Services.NotificationService.NotificationService>();
 builder.Services.AddScoped<NotificationServiceHearts>();
 builder.Services.AddScoped<INotificationServiceFactory, NotificationServiceFactory>();
 builder.Services.AddScoped(sp => sp.GetRequiredService<INotificationServiceFactory>().Create());
+
+// SMS Services
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+builder.Services.Configure<SmsSettings>(builder.Configuration.GetSection("SmsSettings"));
+
+// Choose SMS service implementation based on configuration
+var smsProvider = builder.Configuration.GetSection("SmsSettings:Provider").Value;
+if (smsProvider?.ToLower() == "demo")
+{
+    builder.Services.AddScoped<ISmsService, DemoSmsService>();
+}
+else
+{
+    builder.Services.AddScoped<ISmsService, TwilioSmsService>();
+}
+
+builder.Services.AddScoped<EmocineSveikataServer.Services.SmsService.NotificationService>();
+
+// Register the wellness message scheduler background service
+if (builder.Configuration.GetSection("SmsSettings:EnableDailyMessages").Get<bool>())
+{
+    builder.Services.AddHostedService<WellnessMessageScheduler>();
+}
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 

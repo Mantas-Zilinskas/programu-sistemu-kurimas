@@ -10,14 +10,14 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
         {
             { DiscussionTagEnum.Depresija.ToString(),
                 [
-                    "Tu tikrai patirsi laimæ!",
+                    "Tu tikrai patirsi laimï¿½!",
                     "Tavo ateitis bus nuostabi!",
                     "Tau viskas pavyks!",
                 ]
             },
-            { DiscussionTagEnum.PsichinëSveikata.ToString(),
+            { DiscussionTagEnum.PsichinÄ—Sveikata.ToString(),
                 [
-                    "Nebijok pradëti ið naujo!",
+                    "Nebijok pradï¿½ti iï¿½ naujo!",
                     "Tu stipresnis, nei manai!",
                 ]
             },
@@ -29,19 +29,19 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
             { DiscussionTagEnum.Terapija.ToString(),
                 [
                     "Tu gali pasiekti savo svajones!",
-                    "Tu gali pasiekti bet kà!",
+                    "Tu gali pasiekti bet kï¿½!",
                     "Tavo pastangos vertingos!",
                 ]
             },
             { DiscussionTagEnum.Santykiai.ToString(),
                 [
-                    "Neleisk niekam tavæs stumdyti!",
+                    "Neleisk niekam tavï¿½s stumdyti!",
                 ]
             },
-            { DiscussionTagEnum.FizinëSveikata.ToString(),
+            { DiscussionTagEnum.FizinÄ—Sveikata.ToString(),
                 [
-                    "Iððûkiai tik sustiprins tave!",
-                    "Tu gali nugalëti visas kliûtis!",
+                    "Iï¿½ï¿½ï¿½kiai tik sustiprins tave!",
+                    "Tu gali nugalï¿½ti visas kliï¿½tis!",
                 ]
             },
         };
@@ -64,7 +64,7 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
             };
         }
 
-        public async Task<PositiveMessageDto> GetPreferredRandomMessage(string selectedTopicsJson)
+        public async Task<PositiveMessageDto> GetPreferredRandomMessage(string? selectedTopicsJson)
         {
             List<string> preferredPositiveMessages = [];
             List<string>? selectedTopics = JsonSerializer.Deserialize<List<string>>(selectedTopicsJson);

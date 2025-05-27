@@ -12,6 +12,9 @@ namespace EmocineSveikataServer.Repositories.UserRepository
         Task<User> CreateUser(User user);
         Task<bool> UserExists(string username);
         Task<bool> EmailExists(string email);
+        Task<UserProfile?> GetUserProfileAsync(int userId);
+        Task<UserProfile> UpdateUserProfileAsync(UserProfile profile);
+        Task<List<UserProfile>> GetAllUserProfilesWithSmsEnabled();
         Task SaveChanges();
     }
 }

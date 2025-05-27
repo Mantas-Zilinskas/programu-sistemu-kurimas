@@ -1,4 +1,4 @@
-﻿using EmocineSveikataServer.Dto.CommentDto;
+using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Services.CommentService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,14 +23,18 @@ namespace EmocineSveikataServer.Controllers
 		[HttpPost("{discussionId}/comments/{commentId}/like")]
 		public async Task<IActionResult> LikeCommentAsync(int commentId)
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			return Ok(await _service.ChangeLikeStatusCommentAsync(commentId, userId));
 		}
 
 		[HttpPost("{discussionId}/comments/{commentId}/reply")]
 		public async Task<IActionResult> ReplyToCommentAsync(int discussionId, int commentId, [FromBody] CommentCreateDto reply)
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			return Ok(await _service.ReplyToCommentAsync(discussionId, commentId, reply, userId));
 		}
 

@@ -35,7 +35,7 @@ namespace EmocineSveikataServer.Repositories.UserRepository
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<List<User>> GetUsersByIds(List<int> ids) // If there are duplicates in `ids`, duplicate users will be returned (this is on purpose)
+        public async Task<List<User>> GetUsersByIds(List<int> ids) 
         {
             var usersDict = await _context.Users
                 .Where(user => ids.Contains(user.Id))
@@ -52,6 +52,37 @@ namespace EmocineSveikataServer.Repositories.UserRepository
         public async Task<User?> GetUserByUsername(string username)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+        }
+
+        public async Task<UserProfile?> GetUserProfileAsync(int userId)
+        {
+            return await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+        }
+        
+        public async Task<List<UserProfile>> GetAllUserProfilesWithSmsEnabled()
+        {
+            return await _context.UserProfiles
+                .Where(p => p.EnableSmsNotifications && !string.IsNullOrEmpty(p.PhoneNumber))
+                .ToListAsync();
+        }
+
+        public async Task<UserProfile> UpdateUserProfileAsync(UserProfile profile)
+        {
+            var existingProfile = await _context.UserProfiles.FindAsync(profile.Id);
+            
+            if (existingProfile == null)
+            {
+                await _context.UserProfiles.AddAsync(profile);
+            }
+            else
+            {
+                _context.Entry(existingProfile).CurrentValues.SetValues(profile);
+                existingProfile.UpdatedAt = DateTime.UtcNow;
+            }
+            
+            await SaveChanges();
+            return profile;
         }
 
         public async Task SaveChanges()

@@ -1,4 +1,4 @@
-﻿using EmocineSveikataServer.Enums;
+using EmocineSveikataServer.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,7 +16,7 @@ namespace EmocineSveikataServer.Models
         public List<DiscussionTagEnum> Tags { get; set; } = new List<DiscussionTagEnum>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
         [Timestamp]
-        public byte[] RowVersion { get; set; }
+        public required byte[] RowVersion { get; set; }
         public virtual User? User { get; set; }
     }
 }

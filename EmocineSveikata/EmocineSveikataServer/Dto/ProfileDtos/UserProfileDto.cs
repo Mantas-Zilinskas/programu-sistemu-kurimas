@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EmocineSveikataServer.Dto.ProfileDtos
 {
     public class UserProfileDto
@@ -6,6 +8,12 @@ namespace EmocineSveikataServer.Dto.ProfileDtos
         public int UserId { get; set; }
         public string? ProfilePicture { get; set; }
         public List<string>? SelectedTopics { get; set; }
+        
+        [Phone]
+        public string? PhoneNumber { get; set; }
+        
+        public bool EnableSmsNotifications { get; set; }
+        
         public DateTime UpdatedAt { get; set; }
     }
 
@@ -13,5 +21,10 @@ namespace EmocineSveikataServer.Dto.ProfileDtos
     {
         public string? ProfilePicture { get; set; }
         public List<string>? SelectedTopics { get; set; }
+        
+        [Phone]
+        public string? PhoneNumber { get; set; }
+        
+        public bool EnableSmsNotifications { get; set; }
     }
 }

@@ -40,9 +40,11 @@ namespace EmocineSveikataServer.Controllers
             {
                 UserId = profile.UserId,
                 ProfilePicture = profile.ProfilePicture,
-                SelectedTopics = profile.SelectedTopics != null
-                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics)
-                    : new List<string>()
+                SelectedTopics = profile.SelectedTopics != null 
+                    ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics) 
+                    : new List<string>(),
+                PhoneNumber = profile.PhoneNumber,
+                EnableSmsNotifications = profile.EnableSmsNotifications
             };
 
             return Ok(profileDto);
@@ -64,6 +66,8 @@ namespace EmocineSveikataServer.Controllers
                     .ToList();
 
                 profile.SelectedTopics = JsonSerializer.Serialize(validEnumValues);
+                profile.PhoneNumber = profileDto.PhoneNumber;
+                profile.EnableSmsNotifications = profileDto.EnableSmsNotifications;
                 profile = await _userProfileRepository.UpdateUserProfile(profile);
             }
             else
@@ -77,6 +81,8 @@ namespace EmocineSveikataServer.Controllers
                     UserId = profileDto.UserId,
                     ProfilePicture = profileDto.ProfilePicture,
                     SelectedTopics = JsonSerializer.Serialize(validEnumValues),
+                    PhoneNumber = profileDto.PhoneNumber,
+                    EnableSmsNotifications = profileDto.EnableSmsNotifications,
                     UpdatedAt = DateTime.UtcNow
                 };
                 profile = await _userProfileRepository.CreateUserProfile(profile);

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Services.DiscussionService;
 using EmocineSveikataServer.Dto.DiscussionDto;
@@ -61,7 +61,9 @@ namespace EmocineSveikataServer.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateDiscussion([FromBody] DiscussionCreateDto discussionDto)
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			discussionDto.CreatorUserId = userId;
 			var newDto = await _service.CreateDiscussionAsync(discussionDto);
 			return CreatedAtAction(nameof(GetDiscussion), new { discussionId = newDto.Id }, newDto);
@@ -101,7 +103,9 @@ namespace EmocineSveikataServer.Controllers
 		[HttpPost("{discussionId}/comments")]
 		public async Task<IActionResult> AddCommentAsync(int discussionId, [FromBody] CommentCreateDto comment)
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			comment.CreatorUserId = userId;
 			var discussionDto = await _service.AddCommentToDiscussionAsync(discussionId, comment);
 			if (discussionDto == null) return NotFound();
@@ -111,7 +115,9 @@ namespace EmocineSveikataServer.Controllers
 		[HttpPost("{discussionId}/like")]
 		public async Task<IActionResult> LikeDiscussion(int discussionId)
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			var discussionDto = await _service.ChangeLikeStatusAsync(discussionId, userId);
 			if (discussionDto == null) return NotFound();
 			return Ok(discussionDto);

@@ -1,4 +1,4 @@
-﻿using EmocineSveikataServer.Services.NotificationService;
+using EmocineSveikataServer.Services.NotificationService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -20,7 +20,9 @@ namespace EmocineSveikataServer.Controllers
 		[HttpGet()]
 		public async Task<IActionResult> GetNotifications()
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			var notifications = await _service.GetNotificationsAsync(userId);
 			return Ok(notifications);
 		}
@@ -28,7 +30,9 @@ namespace EmocineSveikataServer.Controllers
 		[HttpPost("mark-read")]
 		public async Task<IActionResult> MarkAllAsRead()
 		{
-			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+			if (userIdClaim == null) return Unauthorized();
+			var userId = int.Parse(userIdClaim.Value);
 			await _service.MarkAllAsReadAsync(userId);
 			return NoContent();
 		}

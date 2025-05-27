@@ -18,6 +18,8 @@ const UserProfile = () => {
     const { currentUser } = useAuth();
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [imagePreview, setImagePreview] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [enableSmsNotifications, setEnableSmsNotifications] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -41,9 +43,12 @@ const UserProfile = () => {
             if (response.data) {
                 setSelectedTopics(response.data.selectedTopics || []);
                 setImagePreview(response.data.profilePicture || '');
+                setPhoneNumber(response.data.phoneNumber || '');
+                setEnableSmsNotifications(response.data.enableSmsNotifications || false);
             }
         } catch (err) {
-            console.log('Profile not found, will create on save:', err);
+            console.log('Profile not found:', err);
+
         } finally {
             setLoading(false);
         }
@@ -78,7 +83,9 @@ const UserProfile = () => {
             const profileData = {
                 userId: currentUser.user.id,
                 profilePicture: imagePreview,
-                selectedTopics: selectedTopics
+                selectedTopics: selectedTopics,
+                phoneNumber: phoneNumber,
+                enableSmsNotifications: enableSmsNotifications
             };
 
             await axios.post('/api/Profile/user', profileData, {
@@ -119,6 +126,34 @@ const UserProfile = () => {
                 <div className="profile-right">
                     <p><strong>Vartotojo vardas:</strong> {currentUser?.user?.username || 'No username available'}</p>
                     <p><strong>El. paštas:</strong> {currentUser?.user?.email || 'No email available'}</p>
+                    
+                    <div className="phone-settings">
+                        <h3>SMS pranešimų nustatymai</h3>
+                        <div className="form-group">
+                            <label htmlFor="phone-number">Telefono numeris:</label>
+                            <input 
+                                id="phone-number" 
+                                type="tel" 
+                                value={phoneNumber} 
+                                onChange={(e) => setPhoneNumber(e.target.value)} 
+                                placeholder="+370XXXXXXXX" 
+                            />
+                            <small>Įveskite telefono numerį tarptautiniu formatu (pvz., +370XXXXXXXX)</small>
+                        </div>
+                        
+                        <div className="notification-toggle">
+                            <label className="checkbox-container">
+                                <input 
+                                    type="checkbox" 
+                                    checked={enableSmsNotifications} 
+                                    onChange={() => setEnableSmsNotifications(!enableSmsNotifications)} 
+                                />
+                                <span className="checkmark"></span>
+                                Įjungti SMS pranešimus
+                            </label>
+                            <small>Gausite pranešimus apie jūsų paskyroje vykstančius įvykius</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 

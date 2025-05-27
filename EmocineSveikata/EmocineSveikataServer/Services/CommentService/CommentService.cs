@@ -6,6 +6,7 @@ using EmocineSveikataServer.Repositories.CommentRepository;
 using EmocineSveikataServer.Repositories.UserRepository;
 using EmocineSveikataServer.Services.NotificationService;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace EmocineSveikataServer.Services.CommentService
 {
@@ -97,7 +98,7 @@ namespace EmocineSveikataServer.Services.CommentService
 		{
 			foreach (var comment in comments)
 			{
-				if (!comment.Replies.IsNullOrEmpty())
+				if (comment.Replies != null && comment.Replies.Count > 0)
 				{
 					RemoveSoftDeletedReplies(comment.Replies);
 				}

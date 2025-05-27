@@ -47,7 +47,8 @@ const SpecialistProfile = () => {
                 setImagePreview(response.data.profilePicture || '');
             }
         } catch (err) {
-            console.log('Profile not found, will create on save:', err);
+            console.log('Profile not found', err);
+
         } finally {
             setLoading(false);
         }

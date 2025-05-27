@@ -1,4 +1,4 @@
-﻿using EmocineSveikataServer.Enums;
+using EmocineSveikataServer.Enums;
 
 namespace EmocineSveikataServer.Dto.DiscussionDto
 {
@@ -7,6 +7,6 @@ namespace EmocineSveikataServer.Dto.DiscussionDto
 		public string? Title { get; set; }
 		public string? Content { get; set; }
 		public List<DiscussionTagEnum>? Tags { get; set; }
-		public byte[] RowVersion { get; set; }
+		public required byte[] RowVersion { get; set; }
 	}
 }
