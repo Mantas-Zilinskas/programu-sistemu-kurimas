@@ -76,7 +76,8 @@ const SpecialistCalendar = () => {
                         time: slot.startTime.substring(0, 5),
                         endTime: slot.endTime.substring(0, 5),
                         isBooked: slot.isBooked,
-                        bookedByUserId: slot.bookedByUserId
+                        bookedByUserId: slot.bookedByUserId,
+                        meetLink: slot.meetLink
                     };
                 });
 
@@ -88,6 +89,19 @@ const SpecialistCalendar = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getMeetLink = (date, hour) => {
+        const dateStr = formatDate(date);
+        const timeStr = formatTime(hour);
+        const slot = timeSlots.find(slot => {
+            let slotDateStr = slot.date;
+            if (slotDateStr.includes('T')) {
+                slotDateStr = slotDateStr.split('T')[0];
+            }
+            return slotDateStr === dateStr && slot.time === timeStr;
+        });
+        return slot ? slot.meetLink : null;
     };
 
     const getDatesForWeek = () => {
@@ -295,17 +309,43 @@ const SpecialistCalendar = () => {
                         {hours.map(hour => (
                             <tr key={hour}>
                                 <td className="time-cell">{formatTime(hour)}</td>
-                                {getDatesForWeek().map((date, index) => (
-                                    <td
-                                        key={index}
-                                        className={`time-slot ${isTimeSlotSelected(date, hour) ? 'selected' : ''} ${isTimeSlotBooked(date, hour) ? 'booked' : ''}`}
-                                        onClick={() => toggleTimeSlot(date, hour)}
-                                    >
-                                        {isTimeSlotSelected(date, hour) && (
-                                            <span className="slot-indicator">{isTimeSlotBooked(date, hour) ? '🔒' : '✓'}</span>
-                                        )}
-                                    </td>
-                                ))}
+                                {getDatesForWeek().map((date, index) => {
+                                    const isSelected = isTimeSlotSelected(date, hour);
+                                    const isBooked = isTimeSlotBooked(date, hour);
+                                    const meetLink = getMeetLink(date, hour);
+                                    
+                                    return (
+                                        <td
+                                            key={index}
+                                            className={`time-slot ${isSelected ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
+                                            onClick={() => !isBooked ? toggleTimeSlot(date, hour) : null}
+                                            style={{ cursor: isBooked ? 'default' : 'pointer' }}
+                                        >
+                                            {isSelected && (
+                                                <div className="slot-content">
+                                                    {isBooked ? (
+                                                        <div className="booked-slot">
+                                                            <span className="slot-indicator">🔒</span>
+                                                            {meetLink && (
+                                                                <a 
+                                                                    href={meetLink} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer"
+                                                                    className="meet-link-btn"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                >
+                                                                    📹 Prisijungti
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="slot-indicator">✓</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
+                                    );
+                                })}
                             </tr>
                         ))}
                     </tbody>

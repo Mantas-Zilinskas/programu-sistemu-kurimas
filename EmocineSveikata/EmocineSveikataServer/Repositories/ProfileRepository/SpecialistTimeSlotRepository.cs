@@ -24,6 +24,7 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
                     ts.Date > currentDate || // Future dates
                     (ts.Date == currentDate && ts.EndTime > currentTime) // Today and not yet ended
                 )
+                .Where(ts => !ts.IsBooked)
                 .OrderBy(ts => ts.Date)
                 .ThenBy(ts => ts.StartTime)
                 .ToListAsync();
@@ -47,7 +48,18 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
                 .ToListAsync();
         }
 
-        public async Task<SpecialistTimeSlot?> GetTimeSlotById(int timeSlotId)
+		public async Task<List<SpecialistTimeSlot>> GetBookedTimeSlotsByUserId(int userId)
+		{
+			return await _context.SpecialistTimeSlots
+				.Where(ts => ts.BookedByUserId == userId && ts.IsBooked)
+				.Include(ts => ts.User)
+				.Include(ts => ts.BookedByUser)
+				.OrderBy(ts => ts.Date)
+				.ThenBy(ts => ts.StartTime)
+				.ToListAsync();
+		}
+
+		public async Task<SpecialistTimeSlot?> GetTimeSlotById(int timeSlotId)
         {
             return await _context.SpecialistTimeSlots
                 .FirstOrDefaultAsync(ts => ts.Id == timeSlotId);

@@ -158,7 +158,8 @@ namespace EmocineSveikataServer.Controllers
                 StartTime = ts.StartTime,
                 EndTime = ts.EndTime,
                 IsBooked = ts.IsBooked,
-                BookedByUserId = ts.BookedByUserId
+                BookedByUserId = ts.BookedByUserId,
+                MeetLink = ts.MeetLink
             }).ToList();
 
             return Ok(timeSlotDtos);

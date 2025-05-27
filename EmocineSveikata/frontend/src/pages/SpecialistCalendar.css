@@ -114,3 +114,48 @@
         margin-bottom: 10px;
         color: #666;
     }
+
+	.slot-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.booked-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.meet-link-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 2px 6px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.meet-link-btn:hover {
+    background-color: #218838;
+    text-decoration: none;
+    color: white;
+}
+
+.time-slot.booked {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.time-slot.booked:hover {
+    background-color: #f8d7da;
+}
+
+.slot-indicator {
+    font-size: 1.2rem;
+}

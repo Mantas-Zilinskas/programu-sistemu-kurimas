@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using EmocineSveikataServer.Services.Meets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -82,6 +83,8 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+
+builder.Services.AddScoped<GoogleMeetService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
