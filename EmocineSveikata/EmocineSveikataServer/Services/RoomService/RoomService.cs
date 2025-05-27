@@ -35,6 +35,7 @@ namespace EmocineSveikataServer.Services.RoomService
                 RoomDto roomDto = new()
                 {
                     Id = specialistTimeSlots[i].Id,
+                    SpecialistId = specialistProfiles[i].UserId,
                     SpecialistName = users[i].Username,
                     Bio = specialistProfiles[i].Bio,
                     ProfilePicture = specialistProfiles[i].ProfilePicture,

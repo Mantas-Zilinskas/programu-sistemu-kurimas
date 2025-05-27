@@ -10,7 +10,7 @@ namespace EmocineSveikataServer.Services.NotificationService
 	{
 		private INotificationRepository _repository;
 		private IMapper _mapper;
-
+		
 		public NotificationService(INotificationRepository repository, IMapper mapper)
 		{
 			_repository = repository;

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using EmocineSveikataServer.Dto;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -33,5 +34,11 @@ namespace EmocineSveikataServer.Controllers
 			return NoContent();
 		}
 
-	}
+    [HttpPost("send")]
+    public async Task<IActionResult> send([FromBody] NotificationDto dto)
+    {
+			await _service.CreateNotificationAsync(dto.Message, dto.Id);
+      return Ok();
+    }
+  }
 }

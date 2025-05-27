@@ -312,3 +312,16 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+.message-button {
+  color: grey;
+}
+
+.message-button {
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.message-button:hover {
+  transform: scale(1.2);
+}
