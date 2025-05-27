@@ -18,6 +18,11 @@ namespace EmocineSveikataServer.Models
         
         public string? SelectedTopics { get; set; } // Stored as JSON string
         
+        [Phone]
+        public string? PhoneNumber { get; set; }
+        
+        public bool ReceiveSmsMessages { get; set; } = false;
+        
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

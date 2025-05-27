@@ -85,6 +85,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPositiveMessageService, PositiveMessageService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
 
 // Notification service using Strategy Design Pattern
 // Utilize it by changing "appsettings.json".NotificationSettings.Type from the default "Regular" to "Hearts" to add hearts to notifications... for the extra user comfort!

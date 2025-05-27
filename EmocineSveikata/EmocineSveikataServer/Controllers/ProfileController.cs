@@ -3,6 +3,7 @@ using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Dto.ProfileDtos;
 using EmocineSveikataServer.Enums;
+using EmocineSveikataServer.Services.SmsService;
 using System.Text.Json;
 using System;
 using System.Linq;
@@ -16,15 +17,18 @@ namespace EmocineSveikataServer.Controllers
         private readonly IUserProfileRepository _userProfileRepository;
         private readonly ISpecialistProfileRepository _specialistProfileRepository;
         private readonly ISpecialistTimeSlotRepository _timeSlotRepository;
+        private readonly ISmsService _smsService;
 
         public ProfileController(
             IUserProfileRepository userProfileRepository,
             ISpecialistProfileRepository specialistProfileRepository,
-            ISpecialistTimeSlotRepository timeSlotRepository)
+            ISpecialistTimeSlotRepository timeSlotRepository,
+            ISmsService smsService)
         {
             _userProfileRepository = userProfileRepository;
             _specialistProfileRepository = specialistProfileRepository;
             _timeSlotRepository = timeSlotRepository;
+            _smsService = smsService;
         }
 
         [HttpGet("user/{userId}")]
@@ -42,7 +46,9 @@ namespace EmocineSveikataServer.Controllers
                 ProfilePicture = profile.ProfilePicture,
                 SelectedTopics = profile.SelectedTopics != null
                     ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics)
-                    : new List<string>()
+                    : new List<string>(),
+                PhoneNumber = profile.PhoneNumber,
+                ReceiveSmsMessages = profile.ReceiveSmsMessages
             };
 
             return Ok(profileDto);
@@ -58,6 +64,8 @@ namespace EmocineSveikataServer.Controllers
             {
                 profile = await _userProfileRepository.GetUserProfileByUserId(profileDto.UserId);
                 profile.ProfilePicture = profileDto.ProfilePicture;
+                profile.PhoneNumber = profileDto.PhoneNumber;
+                profile.ReceiveSmsMessages = profileDto.ReceiveSmsMessages;
 
                 var validEnumValues = profileDto.SelectedTopics
                     .Where(topic => Enum.TryParse<DiscussionTagEnum>(topic, out _))
@@ -76,6 +84,8 @@ namespace EmocineSveikataServer.Controllers
                 {
                     UserId = profileDto.UserId,
                     ProfilePicture = profileDto.ProfilePicture,
+                    PhoneNumber = profileDto.PhoneNumber,
+                    ReceiveSmsMessages = profileDto.ReceiveSmsMessages,
                     SelectedTopics = JsonSerializer.Serialize(validEnumValues),
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -220,6 +230,32 @@ namespace EmocineSveikataServer.Controllers
             }
 
             return Ok(new { message = "Time slot deleted successfully" });
+        }
+
+        [HttpPost("user/{userId}/send-test-sms")]
+        public async Task<ActionResult> SendTestSms(int userId)
+        {
+            var profile = await _userProfileRepository.GetUserProfileByUserId(userId);
+            if (profile == null)
+            {
+                return NotFound(new { message = "User profile not found" });
+            }
+            
+            if (string.IsNullOrEmpty(profile.PhoneNumber))
+            {
+                return BadRequest(new { message = "Phone number is not set" });
+            }
+            
+            var result = await _smsService.SendTestMessage(profile);
+            
+            if (result)
+            {
+                return Ok(new { message = "Test SMS sent successfully" });
+            }
+            else
+            {
+                return StatusCode(500, new { message = "Failed to send test SMS" });
+            }
         }
     }
 }

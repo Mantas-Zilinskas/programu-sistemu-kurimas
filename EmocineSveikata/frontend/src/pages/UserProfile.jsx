@@ -18,8 +18,11 @@ const UserProfile = () => {
     const { currentUser } = useAuth();
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [imagePreview, setImagePreview] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [receiveSmsMessages, setReceiveSmsMessages] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [smsSent, setSmsSent] = useState(false);
 
     useEffect(() => {
         if (currentUser && currentUser.user) {
@@ -41,6 +44,8 @@ const UserProfile = () => {
             if (response.data) {
                 setSelectedTopics(response.data.selectedTopics || []);
                 setImagePreview(response.data.profilePicture || '');
+                setPhoneNumber(response.data.phoneNumber || '');
+                setReceiveSmsMessages(response.data.receiveSmsMessages || false);
             }
         } catch (err) {
             console.log('Profile not found, will create on save:', err);
@@ -74,11 +79,14 @@ const UserProfile = () => {
         try {
             setLoading(true);
             setError('');
+            setSmsSent(false);
 
             const profileData = {
                 userId: currentUser.user.id,
                 profilePicture: imagePreview,
-                selectedTopics: selectedTopics
+                selectedTopics: selectedTopics,
+                phoneNumber: phoneNumber,
+                receiveSmsMessages: receiveSmsMessages
             };
 
             await axios.post('/api/Profile/user', profileData, {
@@ -92,6 +100,34 @@ const UserProfile = () => {
         } catch (err) {
             console.error('Error saving profile:', err);
             setError('Nepavyko išsaugoti profilio. Bandykite dar kartą.');
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const sendTestSms = async () => {
+        if (!currentUser || !currentUser.user) return;
+        if (!phoneNumber) {
+            setError('Įveskite telefono numerį prieš siunčiant bandomąją žinutę');
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            setError('');
+            setSmsSent(false);
+            
+            await axios.post(`/api/Profile/user/${currentUser.user.id}/send-test-sms`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${currentUser.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            setSmsSent(true);
+        } catch (err) {
+            console.error('Error sending test SMS:', err);
+            setError(err.response?.data?.message || 'Nepavyko išsiųsti bandomosios žinutės');
         } finally {
             setLoading(false);
         }
@@ -119,6 +155,42 @@ const UserProfile = () => {
                 <div className="profile-right">
                     <p><strong>Vartotojo vardas:</strong> {currentUser?.user?.username || 'No username available'}</p>
                     <p><strong>El. paštas:</strong> {currentUser?.user?.email || 'No email available'}</p>
+                    
+                    <div className="sms-settings">
+                        <h3>SMS pranešimų nustatymai</h3>
+                        <div className="form-group">
+                            <label htmlFor="phone-number">Telefono numeris:</label>
+                            <input 
+                                type="tel" 
+                                id="phone-number" 
+                                value={phoneNumber} 
+                                onChange={(e) => setPhoneNumber(e.target.value)} 
+                                placeholder="+370XXXXXXXX" 
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="checkbox-container">
+                                <input 
+                                    type="checkbox" 
+                                    checked={receiveSmsMessages} 
+                                    onChange={() => setReceiveSmsMessages(!receiveSmsMessages)} 
+                                />
+                                <span className="checkmark"></span>
+                                Gauti pozityvias žinutes SMS formatu
+                            </label>
+                        </div>
+                        
+                        <button 
+                            onClick={sendTestSms} 
+                            disabled={loading || !phoneNumber} 
+                            className="test-sms-btn"
+                        >
+                            {loading ? 'Siunčiama...' : 'Išsiųsti bandomąją žinutę'}
+                        </button>
+                        
+                        {smsSent && <p className="success-message">Bandomoji žinutė sėkmingai išsiųsta!</p>}
+                    </div>
                 </div>
             </div>
 
