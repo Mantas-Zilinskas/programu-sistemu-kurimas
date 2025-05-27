@@ -40,6 +40,7 @@ const Rooms = () => {
   const handleOpenModal = async (id) => {
     setHandleSubmit(() =>
       (content) => {
+        content = currentUser.user.username + " paliko atsiliepimą: " + content
         sendNotification(id, content);
         setModalIsOpen(false);
         alert("pranešimas išsiųstas");
