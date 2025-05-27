@@ -16,7 +16,7 @@ const TextFieldModal = ({ isOpen, onRequestClose, handleSubmit, title}) => {
     >
       <h3 className={styles.centerText}>{title}</h3>
       <TextField
-        label="Jûsø þinutë"
+        label="JÅ«sÅ³ Å¾inutÄ—"
         multiline
         rows={4}
         value={content}

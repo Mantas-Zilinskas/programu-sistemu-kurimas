@@ -313,15 +313,15 @@
     to { transform: rotate(360deg); }
 }
 
-.message-button {
+.message-button-icon {
   color: grey;
 }
 
-.message-button {
+.message-button-icon {
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
 }
 
-.message-button:hover {
+.message-button-icon:hover {
   transform: scale(1.2);
 }
