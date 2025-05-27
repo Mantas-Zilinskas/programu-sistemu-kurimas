@@ -22,6 +22,8 @@ using EmocineSveikataServer.Services.NotificationService;
 using EmocineSveikataServer.Repositories.NotificationRepository;
 using EmocineSveikataServer.Filters;
 using Serilog;
+using EmocineSveikataServer.Settings;
+using EmocineSveikataServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +97,11 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<NotificationServiceHearts>();
 builder.Services.AddScoped<INotificationServiceFactory, NotificationServiceFactory>();
 builder.Services.AddScoped(sp => sp.GetRequiredService<INotificationServiceFactory>().Create());
+
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+builder.Services.AddScoped<ITwilioService, TwilioService>();
+
+builder.Services.AddHostedService<SmsReminderService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 

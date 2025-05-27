@@ -20,6 +20,11 @@ const UserProfile = () => {
     const [imagePreview, setImagePreview] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [smsNotificationsEnabled, setSmsNotificationsEnabled] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [smsReminderTopic, setSmsReminderTopic] = useState('');
+    const [sendingTestSms, setSendingTestSms] = useState(false);
 
     useEffect(() => {
         if (currentUser && currentUser.user) {
@@ -41,6 +46,9 @@ const UserProfile = () => {
             if (response.data) {
                 setSelectedTopics(response.data.selectedTopics || []);
                 setImagePreview(response.data.profilePicture || '');
+                setSmsNotificationsEnabled(response.data.smsNotificationsEnabled || false);
+                setPhoneNumber(response.data.phoneNumber || '');
+                setSmsReminderTopic(response.data.smsReminderTopic || '');
             }
         } catch (err) {
             console.log('Profile not found, will create on save:', err);
@@ -74,11 +82,15 @@ const UserProfile = () => {
         try {
             setLoading(true);
             setError('');
+            setSuccess('');
 
             const profileData = {
                 userId: currentUser.user.id,
                 profilePicture: imagePreview,
-                selectedTopics: selectedTopics
+                selectedTopics: selectedTopics,
+                smsNotificationsEnabled: smsNotificationsEnabled,
+                phoneNumber: phoneNumber,
+                smsReminderTopic: smsReminderTopic
             };
 
             await axios.post('/api/Profile/user', profileData, {
@@ -88,12 +100,40 @@ const UserProfile = () => {
                 }
             });
 
-            alert('Profilis išsaugotas!');
+            setSuccess('Profilis išsaugotas!');
         } catch (err) {
             console.error('Error saving profile:', err);
             setError('Nepavyko išsaugoti profilio. Bandykite dar kartą.');
         } finally {
             setLoading(false);
+        }
+    };
+    
+    const handleTestSms = async () => {
+        if (!currentUser || !currentUser.user || !phoneNumber) return;
+        
+        try {
+            setSendingTestSms(true);
+            setError('');
+            setSuccess('');
+            
+            const testSmsData = {
+                phoneNumber: phoneNumber
+            };
+            
+            await axios.post('/api/Profile/user/test-sms', testSmsData, {
+                headers: {
+                    'Authorization': `Bearer ${currentUser.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            setSuccess('Bandomoji SMS sėkmingai išsiųsta!');
+        } catch (err) {
+            console.error('Error sending test SMS:', err);
+            setError('Nepavyko išsiųsti bandomosios SMS. Patikrinkite telefono numerį ir bandykite dar kartą.');
+        } finally {
+            setSendingTestSms(false);
         }
     };
 
@@ -106,6 +146,7 @@ const UserProfile = () => {
             <h1>Naudotojo profilis</h1>
 
             {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
 
             <div className="profile-content">
                 <div className="profile-left">
@@ -137,6 +178,67 @@ const UserProfile = () => {
                         </label>
                     ))}
                 </div>
+            </div>
+
+            <div className="sms-notifications-section">
+                <h2>SMS Priminimų Nustatymai</h2>
+                <div className="sms-toggle">
+                    <label className="toggle-container">
+                        <input
+                            type="checkbox"
+                            checked={smsNotificationsEnabled}
+                            onChange={() => setSmsNotificationsEnabled(!smsNotificationsEnabled)}
+                        />
+                        <span className="toggle-slider"></span>
+                        <span className="toggle-label">Įjungti SMS priminimus</span>
+                    </label>
+                </div>
+
+                {smsNotificationsEnabled && (
+                    <div className="sms-settings">
+                        <div className="form-group">
+                            <label htmlFor="phone-number">Telefono numeris:</label>
+                            <input
+                                id="phone-number"
+                                type="tel"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                placeholder="+370xxxxxxxx"
+                                className="phone-input"
+                            />
+                            <small>Įveskite telefono numerį su šalies kodu, pvz., +370xxxxxxxx</small>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="sms-topic">Pasirinkite priminimų temą:</label>
+                            <select
+                                id="sms-topic"
+                                value={smsReminderTopic}
+                                onChange={(e) => setSmsReminderTopic(e.target.value)}
+                                className="topic-select"
+                            >
+                                <option value="">Pasirinkite temą...</option>
+                                {topics.map(({ key, value }) => (
+                                    <option key={key} value={key}>
+                                        {value}
+                                    </option>
+                                ))}
+                            </select>
+                            <small>Gausite kasdienius priminimus pagal pasirinktą temą</small>
+                        </div>
+                        
+                        <div className="test-sms-section">
+                            <button 
+                                className="test-sms-button"
+                                onClick={handleTestSms} 
+                                disabled={sendingTestSms || !phoneNumber}
+                            >
+                                {sendingTestSms ? 'Siunčiama...' : 'Siųsti bandomąją SMS'}
+                            </button>
+                            <small>Siųsti bandomąją SMS žinutę, kad įsitikintumėte, jog numeris teisingas</small>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <button onClick={handleSave} disabled={loading}>

@@ -18,6 +18,14 @@ namespace EmocineSveikataServer.Models
         
         public string? SelectedTopics { get; set; } // Stored as JSON string
         
+        public bool SmsNotificationsEnabled { get; set; } = false;
+        
+        public string? PhoneNumber { get; set; }
+        
+        public string? SmsReminderTopic { get; set; }
+        
+        public DateTime? LastSmsReminder { get; set; }
+        
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

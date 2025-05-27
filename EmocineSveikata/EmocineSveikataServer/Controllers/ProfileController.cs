@@ -3,9 +3,11 @@ using EmocineSveikataServer.Models;
 using EmocineSveikataServer.Repositories.ProfileRepository;
 using EmocineSveikataServer.Dto.ProfileDtos;
 using EmocineSveikataServer.Enums;
+using EmocineSveikataServer.Services;
 using System.Text.Json;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EmocineSveikataServer.Controllers
 {
@@ -16,15 +18,18 @@ namespace EmocineSveikataServer.Controllers
         private readonly IUserProfileRepository _userProfileRepository;
         private readonly ISpecialistProfileRepository _specialistProfileRepository;
         private readonly ISpecialistTimeSlotRepository _timeSlotRepository;
+        private readonly ITwilioService _twilioService;
 
         public ProfileController(
             IUserProfileRepository userProfileRepository,
             ISpecialistProfileRepository specialistProfileRepository,
-            ISpecialistTimeSlotRepository timeSlotRepository)
+            ISpecialistTimeSlotRepository timeSlotRepository,
+            ITwilioService twilioService)
         {
             _userProfileRepository = userProfileRepository;
             _specialistProfileRepository = specialistProfileRepository;
             _timeSlotRepository = timeSlotRepository;
+            _twilioService = twilioService;
         }
 
         [HttpGet("user/{userId}")]
@@ -42,7 +47,11 @@ namespace EmocineSveikataServer.Controllers
                 ProfilePicture = profile.ProfilePicture,
                 SelectedTopics = profile.SelectedTopics != null
                     ? JsonSerializer.Deserialize<List<string>>(profile.SelectedTopics)
-                    : new List<string>()
+                    : new List<string>(),
+                SmsNotificationsEnabled = profile.SmsNotificationsEnabled,
+                PhoneNumber = profile.PhoneNumber,
+                SmsReminderTopic = profile.SmsReminderTopic,
+                LastSmsReminder = profile.LastSmsReminder
             };
 
             return Ok(profileDto);
@@ -64,6 +73,16 @@ namespace EmocineSveikataServer.Controllers
                     .ToList();
 
                 profile.SelectedTopics = JsonSerializer.Serialize(validEnumValues);
+                profile.SmsNotificationsEnabled = profileDto.SmsNotificationsEnabled;
+                profile.PhoneNumber = profileDto.PhoneNumber;
+                profile.SmsReminderTopic = profileDto.SmsReminderTopic;
+                
+                if (profile.SmsNotificationsEnabled && !string.IsNullOrEmpty(profile.PhoneNumber))
+                {
+                    string welcomeMessage = "Sveiki! Jūs sėkmingai užsiprenumeravote Emocinės Sveikatos priminimus. Jūs gausite reguliarius priminimus apie psichinę sveikatą.";
+                    await _twilioService.SendSmsAsync(profile.PhoneNumber, welcomeMessage);
+                }
+                
                 profile = await _userProfileRepository.UpdateUserProfile(profile);
             }
             else
@@ -77,8 +96,17 @@ namespace EmocineSveikataServer.Controllers
                     UserId = profileDto.UserId,
                     ProfilePicture = profileDto.ProfilePicture,
                     SelectedTopics = JsonSerializer.Serialize(validEnumValues),
+                    SmsNotificationsEnabled = profileDto.SmsNotificationsEnabled,
+                    PhoneNumber = profileDto.PhoneNumber,
+                    SmsReminderTopic = profileDto.SmsReminderTopic,
                     UpdatedAt = DateTime.UtcNow
                 };
+                
+                if (profile.SmsNotificationsEnabled && !string.IsNullOrEmpty(profile.PhoneNumber))
+                {
+                    string welcomeMessage = "Sveiki! Jūs sėkmingai užsiprenumeravote Emocinės Sveikatos priminimus. Jūs gausite reguliarius priminimus apie psichinę sveikatą.";
+                    await _twilioService.SendSmsAsync(profile.PhoneNumber, welcomeMessage);
+                }
                 profile = await _userProfileRepository.CreateUserProfile(profile);
             }
 
@@ -214,13 +242,36 @@ namespace EmocineSveikataServer.Controllers
         [HttpDelete("specialist/timeslot/{id}")]
         public async Task<ActionResult> DeleteTimeSlot(int id)
         {
-            var success = await _timeSlotRepository.DeleteTimeSlot(id);
-            if (!success)
+            var existingTimeSlot = await _timeSlotRepository.GetTimeSlotById(id);
+            if (existingTimeSlot == null)
             {
                 return NotFound(new { message = "Time slot not found" });
             }
 
+            await _timeSlotRepository.DeleteTimeSlot(id);
             return Ok(new { message = "Time slot deleted successfully" });
+        }
+        
+        [HttpPost("user/test-sms")]
+        public async Task<ActionResult> SendTestSms([FromBody] TestSmsDto testSmsDto)
+        {
+            if (string.IsNullOrEmpty(testSmsDto.PhoneNumber))
+            {
+                return BadRequest(new { message = "Phone number is required" });
+            }
+            
+            string testMessage = "Tai yra bandomoji žinutė iš Emocinės Sveikatos programėlės. Jūsų SMS pranešimai veikia tinkamai!";
+            
+            bool success = await _twilioService.SendSmsAsync(testSmsDto.PhoneNumber, testMessage);
+            
+            if (success)
+            {
+                return Ok(new { message = "Test SMS sent successfully" });
+            }
+            else
+            {
+                return StatusCode(500, new { message = "Failed to send test SMS. Please check Twilio configuration and phone number format." });
+            }
         }
     }
 }

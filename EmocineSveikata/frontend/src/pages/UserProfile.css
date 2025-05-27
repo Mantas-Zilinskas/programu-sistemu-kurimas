@@ -128,3 +128,153 @@ button {
 	button:hover {
 		background-color: #a58f6f;
 	}
+
+/* SMS Notifications Section */
+.sms-notifications-section {
+	margin-top: 20px;
+	padding: 15px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background-color: #f5f5f5;
+}
+
+.error-message {
+	background-color: #ffe6e6;
+	color: #d8000c;
+	padding: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.success-message {
+	background-color: #e6ffe6;
+	color: #006400;
+	padding: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.sms-notifications-section h2 {
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 18px;
+	color: #444;
+}
+
+.sms-toggle {
+	margin-bottom: 15px;
+}
+
+.toggle-container {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.toggle-container input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggle-slider {
+	position: relative;
+	display: inline-block;
+	width: 50px;
+	height: 24px;
+	background-color: #ccc;
+	border-radius: 34px;
+	margin-right: 10px;
+	transition: .4s;
+}
+
+.toggle-slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	border-radius: 50%;
+	transition: .4s;
+}
+
+input:checked + .toggle-slider {
+	background-color: #c2a28f;
+}
+
+input:checked + .toggle-slider:before {
+	transform: translateX(26px);
+}
+
+.toggle-label {
+	font-weight: bold;
+}
+
+.sms-settings {
+	padding: 15px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background-color: white;
+	margin-top: 10px;
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.phone-input,
+.topic-select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+.form-group small {
+	display: block;
+	color: #777;
+	font-size: 12px;
+}
+
+.test-sms-section {
+	margin-top: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.test-sms-button {
+	background-color: #7a9cc6;
+	color: white;
+	padding: 8px 16px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+.test-sms-button:hover {
+	background-color: #5d87b5;
+}
+
+.test-sms-button:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
+}
+
+.test-sms-section small {
+	display: block;
+	color: #777;
+	font-size: 12px;
+}

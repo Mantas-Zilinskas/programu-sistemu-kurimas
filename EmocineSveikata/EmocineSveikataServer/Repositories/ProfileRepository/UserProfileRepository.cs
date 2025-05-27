@@ -38,5 +38,12 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
         {
             return await _context.UserProfiles.AnyAsync(p => p.UserId == userId);
         }
+
+        public async Task<List<UserProfile>> GetUsersWithSmsNotificationsEnabled()
+        {
+            return await _context.UserProfiles
+                .Where(p => p.SmsNotificationsEnabled && p.PhoneNumber != null)
+                .ToListAsync();
+        }
     }
 }

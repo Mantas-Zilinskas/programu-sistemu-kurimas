@@ -6,6 +6,10 @@ namespace EmocineSveikataServer.Dto.ProfileDtos
         public int UserId { get; set; }
         public string? ProfilePicture { get; set; }
         public List<string>? SelectedTopics { get; set; }
+        public bool SmsNotificationsEnabled { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? SmsReminderTopic { get; set; }
+        public DateTime? LastSmsReminder { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
 
@@ -13,5 +17,8 @@ namespace EmocineSveikataServer.Dto.ProfileDtos
     {
         public string? ProfilePicture { get; set; }
         public List<string>? SelectedTopics { get; set; }
+        public bool SmsNotificationsEnabled { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? SmsReminderTopic { get; set; }
     }
 }

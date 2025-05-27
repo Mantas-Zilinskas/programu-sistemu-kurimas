@@ -10,14 +10,14 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
         {
             { DiscussionTagEnum.Depresija.ToString(),
                 [
-                    "Tu tikrai patirsi laimæ!",
+                    "Tu tikrai patirsi laimÄ™!",
                     "Tavo ateitis bus nuostabi!",
                     "Tau viskas pavyks!",
                 ]
             },
-            { DiscussionTagEnum.PsichinëSveikata.ToString(),
+            { DiscussionTagEnum.PsichineSveikata.ToString(),
                 [
-                    "Nebijok pradëti ið naujo!",
+                    "Nebijok pradÄ—ti iÅ¡ naujo!",
                     "Tu stipresnis, nei manai!",
                 ]
             },
@@ -29,19 +29,19 @@ namespace EmocineSveikataServer.Services.PositiveMessageService
             { DiscussionTagEnum.Terapija.ToString(),
                 [
                     "Tu gali pasiekti savo svajones!",
-                    "Tu gali pasiekti bet kà!",
+                    "Tu gali pasiekti bet kÄ…!",
                     "Tavo pastangos vertingos!",
                 ]
             },
             { DiscussionTagEnum.Santykiai.ToString(),
                 [
-                    "Neleisk niekam tavæs stumdyti!",
+                    "Neleisk niekam tavÄ™s stumdyti!",
                 ]
             },
-            { DiscussionTagEnum.FizinëSveikata.ToString(),
+            { DiscussionTagEnum.FizinÄ—Sveikata.ToString(),
                 [
-                    "Iððûkiai tik sustiprins tave!",
-                    "Tu gali nugalëti visas kliûtis!",
+                    "IÅ¡Å¡Å«kiai tik sustiprins tave!",
+                    "Tu gali nugalÄ—ti visas kliÅ«tis!",
                 ]
             },
         };

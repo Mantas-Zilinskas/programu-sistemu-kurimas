@@ -8,5 +8,6 @@ namespace EmocineSveikataServer.Repositories.ProfileRepository
         Task<UserProfile> CreateUserProfile(UserProfile userProfile);
         Task<UserProfile> UpdateUserProfile(UserProfile userProfile);
         Task<bool> UserProfileExists(int userId);
+        Task<List<UserProfile>> GetUsersWithSmsNotificationsEnabled();
     }
 }

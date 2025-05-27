@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EmocineSveikataServer.Dto.CommentDto;
 using EmocineSveikataServer.Dto.CommentDtos;
 using EmocineSveikataServer.Models;
@@ -97,7 +97,7 @@ namespace EmocineSveikataServer.Services.CommentService
 		{
 			foreach (var comment in comments)
 			{
-				if (!comment.Replies.IsNullOrEmpty())
+				if (comment.Replies != null && comment.Replies.Count > 0)
 				{
 					RemoveSoftDeletedReplies(comment.Replies);
 				}
