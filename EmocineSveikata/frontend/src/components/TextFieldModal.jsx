@@ -7,6 +7,12 @@ const TextFieldModal = ({ isOpen, onRequestClose, handleSubmit, title}) => {
 
   const [content, setContent] = useState('');
 
+  const handleButton = () => {
+    if (content == '') return;
+    handleSubmit(content);
+    setContent('');
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -26,7 +32,7 @@ const TextFieldModal = ({ isOpen, onRequestClose, handleSubmit, title}) => {
       <br />
       <br />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className={styles.button} onClick={()=>handleSubmit(content)}>Pateikti</button>
+        <button className={styles.button} onClick={handleButton}>Pateikti</button>
       </div>
     </Modal>
   );

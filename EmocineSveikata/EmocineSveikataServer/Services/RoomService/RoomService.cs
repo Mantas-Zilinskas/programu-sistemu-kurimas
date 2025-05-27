@@ -70,7 +70,8 @@ namespace EmocineSveikataServer.Services.RoomService
 				var bookedRoom = new BookedRoomDto
 				{
 					Id = timeSlot.Id,
-					SpecialistName = specialist?.Username ?? "Unknown",
+          SpecialistId = specialist.Id,
+          SpecialistName = specialist?.Username ?? "Unknown",
 					Bio = profile?.Bio ?? "",
 					ProfilePicture = profile?.ProfilePicture,
 					Date = timeSlot.Date,

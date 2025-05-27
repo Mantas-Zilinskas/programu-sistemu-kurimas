@@ -146,7 +146,6 @@ const Rooms = () => {
   return (
     <div className="rooms-container">
       <div className="rooms-top">
-<<<<<<< HEAD
         <h1 className="rooms-title">Kambariai</h1>
         
         {/* Tab Navigation */}
@@ -163,25 +162,6 @@ const Rooms = () => {
           >
             Mano kambariai ({bookedRooms.length})
           </button>
-=======
-        <h1 className="rooms-title">Galimi kambariai</h1>
-      </div>
-      {rooms.map((room) => (
-        <div key={room.id} className="room-card">
-          <div className="room-header">
-            <div className="room-header">
-              <h2 className="room-creator-name">{room.specialistName}</h2>
-              <div className="profile-picture">
-                <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
-              </div>
-              {currentUser && <EmailIcon className="message-button-icon" onClick={() => handleOpenModal(room.specialistId)} />}
-            </div>
-            <h4 className="room-time">{formatDate(room.date) + ', ' + formatTime(room.startTime) + ' – ' + formatTime(room.endTime)}</h4>
-          </div>
-          <p className="room-creator-bio">
-            {room.bio}
-          </p>
->>>>>>> f136ebb (PSK-28 small fixes)
         </div>
       </div>
 
