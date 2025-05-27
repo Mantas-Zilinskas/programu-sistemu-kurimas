@@ -5,12 +5,12 @@ import axios from 'axios';
 import './SpecialistProfile.css';
 
 const topicsMap = {
-    "Depression": "Depresija",
-    "MentalHealth": "Psichinė sveikata",
+    "Depresija": "Depresija",
+    "PsichinėSveikata": "Psichinė sveikata",
     "ADHD": "ADHD",
-    "Therapy": "Terapija",
-    "Relationships": "Santykiai",
-    "PhysicalHealth": "Fizinė sveikata"
+    "Terapija": "Terapija",
+    "Santykiai": "Santykiai",
+    "FizinėSveikata": "Fizinė sveikata"
 };
 
 const topics = Object.entries(topicsMap).map(([key, value]) => ({ key, value }));

@@ -86,7 +86,7 @@ const DiscussionsEdit = () => {
         "dabartinis>>>>>>>>>>>>>>>>\n" +
         newDiscussion.content +
         "\n==========================\n" +
-        discussion.title +
+        discussion.content +
         "\n<<<<<<<<<<<<<<<<<<<<naujas"
     }
     setDiscussion({
@@ -105,7 +105,7 @@ const DiscussionsEdit = () => {
         <div className="loading-spinner"></div>
         <YesNoModal
           isOpen={isModalOpen}
-          onRequestClose={() => { setIsModalOpen(false) }}
+          onRequestClose={null}
           content="Kažkas jau redagavo šią diskusiją. Ar norėtumėt vistiek išsaugoti savo pakeitimus?"
           handleNo={handleNo}
           handleYes={handleYes}
