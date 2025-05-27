@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styles from './YesNoModal.module.css';
 
-const YesNoModal = ({ isOpen, onRequestClose, content, handleYes, handleNo }) => {
+const YesNoModal = ({ isOpen, onRequestClose, content, handleYes, handleNo, middleText=null, handleMiddle=null }) => {
 
   return (
     <Modal
@@ -15,6 +15,7 @@ const YesNoModal = ({ isOpen, onRequestClose, content, handleYes, handleNo }) =>
       <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button className={styles.button} onClick={handleYes}>Taip</button>
+        {middleText && handleMiddle && <button className={styles.wideButton} onClick={handleMiddle}>{middleText}</button>}
         <button className={styles.button} onClick={handleNo}>Ne</button>
       </div>
     </Modal>

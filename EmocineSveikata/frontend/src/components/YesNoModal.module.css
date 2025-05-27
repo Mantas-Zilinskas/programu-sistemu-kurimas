@@ -28,3 +28,7 @@
 .button {
   width: 5em;
 }
+
+.wideButton {
+  width: 10em;
+}

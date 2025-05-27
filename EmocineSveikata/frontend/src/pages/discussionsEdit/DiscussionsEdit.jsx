@@ -47,7 +47,7 @@ const DiscussionsEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (discussion.title && discussion.content) {
+    if (discussion.title && discussion.content && discussion.rowVersion) {
       setLoading(true);
       let response = await updateDiscussion(discussion);
 
@@ -73,16 +73,44 @@ const DiscussionsEdit = () => {
     }
   }
 
+  const handleResolve = async () => {
+    setIsModalOpen(false);
+    var newDiscussion = await fetchDiscussion(id);
+    var newTitle = discussion.title;
+    var newContent = discussion.content;
+    if (newDiscussion.title != discussion.title) {
+      newTitle = newDiscussion.title + " <dabartinis|||naujas> " + discussion.title;
+    }
+    if (newDiscussion.content != discussion.content) {
+      newContent =
+        "dabartinis>>>>>>>>>>>>>>>>\n" +
+        newDiscussion.content +
+        "\n==========================\n" +
+        discussion.content +
+        "\n<<<<<<<<<<<<<<<<<<<<naujas"
+    }
+    setDiscussion({
+      ...discussion,
+      title: newTitle,
+      content: newContent,
+      rowVersion: newDiscussion.rowVersion,
+      tags: newDiscussion.tags
+    });
+    setLoading(false);
+  }
+
   if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
         <YesNoModal
           isOpen={isModalOpen}
-          onRequestClose={() => { setIsModalOpen(false) }}
+          onRequestClose={null}
           content="Kažkas jau redagavo šią diskusiją. Ar norėtumėt vistiek išsaugoti savo pakeitimus?"
           handleNo={handleNo}
           handleYes={handleYes}
+          middleText={"Pirma Sulyginti"}
+          handleMiddle={handleResolve}
         />
       </div>
     );
