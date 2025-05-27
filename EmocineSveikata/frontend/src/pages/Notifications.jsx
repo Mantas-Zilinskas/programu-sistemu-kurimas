@@ -22,9 +22,9 @@ const NotificationsPage = () => {
 
   return (
 	<div className={styles.notificationList}>
-	  <h2>Jûsø praneğimai</h2>
+	  <h2>JÅ«sÅ³ praneÅ¡imai</h2>
 	  {notifications.length === 0 ? (
-		<p>Dar neturite jokiø praneğimø</p>
+		<p>Dar neturite jokiÅ³ praneÅ¡imÅ³</p>
 	  ) : (
 		notifications.map((n) => (
 		  <div
