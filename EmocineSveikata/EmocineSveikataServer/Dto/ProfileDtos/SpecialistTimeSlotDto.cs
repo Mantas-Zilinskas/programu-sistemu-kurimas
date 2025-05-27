@@ -10,6 +10,7 @@ namespace EmocineSveikataServer.Dto.ProfileDtos
         public bool IsBooked { get; set; }
         public int? BookedByUserId { get; set; }
         public string? BookedByUsername { get; set; }
+        public string MeetLink { get; set; } = "";
     }
 
     public class SpecialistTimeSlotCreateDto
