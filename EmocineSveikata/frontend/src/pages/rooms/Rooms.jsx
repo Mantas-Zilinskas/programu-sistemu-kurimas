@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAvailableRooms, bookRoom, getMyBookedRooms } from '../../api/roomApi.js';
 import './Rooms.css';
+import TextFieldModal from '../../components/TextFieldModal';
+import { sendNotification } from '../../api/notificationApi';
+import EmailIcon from '@mui/icons-material/Email';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Rooms = () => {
   const [availableRooms, setAvailableRooms] = useState([]);
@@ -9,6 +13,9 @@ const Rooms = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingStatus, setBookingStatus] = useState({});
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [handleSubmit, setHandleSubmit] = useState(() => { });
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     loadData();
@@ -29,6 +36,18 @@ const Rooms = () => {
       setLoading(false);
     }
   };
+
+  const handleOpenModal = async (id) => {
+    setHandleSubmit(() =>
+      (content) => {
+        content = currentUser.user.username + " paliko atsiliepimą: " + content
+        sendNotification(id, content);
+        setModalIsOpen(false);
+        alert("pranešimas išsiųstas");
+      }
+    );
+    setModalIsOpen(true);
+  }
 
   const handleBookRoom = async (roomId) => {
     setBookingStatus((prev) => ({ ...prev, [roomId]: 'loading' }));
@@ -194,6 +213,7 @@ const Rooms = () => {
                         <div className="profile-picture">
                           <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
                         </div>
+                        {currentUser && <EmailIcon className="message-button-icon" onClick={() => handleOpenModal(room.specialistId)} />}
                         <h4 className="room-time">
                           {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
                         </h4>
@@ -228,6 +248,7 @@ const Rooms = () => {
                         <div className="profile-picture">
                           <img src={room.profilePicture || 'default-pic.jpg'} alt="Profilio nuotrauka" />
                         </div>
+                        {currentUser && <EmailIcon className="message-button-icon" onClick={() => handleOpenModal(room.specialistId)} />}
                         <h4 className="room-time">
                           {formatDate(room.date)}, {formatTime(room.startTime)} – {formatTime(room.endTime)}
                         </h4>
@@ -244,6 +265,12 @@ const Rooms = () => {
           )}
         </div>
       )}
+      <TextFieldModal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        handleSubmit={handleSubmit}
+        title="Palikite atsiliepimą specialistui"
+      />
     </div>
   );
 };

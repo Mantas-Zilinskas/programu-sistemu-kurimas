@@ -18,3 +18,17 @@ export const markNotificationsRead = async () => {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
+
+export const sendNotification = async (id, message) => {
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  if (!token) throw new Error('Unauthorized');
+
+  await axios.post('/api/Notification/send',
+    {
+      id: id,
+      message: message
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` }
+  });
+}

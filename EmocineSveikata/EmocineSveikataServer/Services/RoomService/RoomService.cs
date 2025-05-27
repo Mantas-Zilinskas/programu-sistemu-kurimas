@@ -35,6 +35,7 @@ namespace EmocineSveikataServer.Services.RoomService
                 RoomDto roomDto = new()
                 {
                     Id = specialistTimeSlots[i].Id,
+                    SpecialistId = specialistProfiles[i].UserId,
                     SpecialistName = users[i].Username,
                     Bio = specialistProfiles[i].Bio,
                     ProfilePicture = specialistProfiles[i].ProfilePicture,
@@ -69,7 +70,8 @@ namespace EmocineSveikataServer.Services.RoomService
 				var bookedRoom = new BookedRoomDto
 				{
 					Id = timeSlot.Id,
-					SpecialistName = specialist?.Username ?? "Unknown",
+          SpecialistId = specialist.Id,
+          SpecialistName = specialist?.Username ?? "Unknown",
 					Bio = profile?.Bio ?? "",
 					ProfilePicture = profile?.ProfilePicture,
 					Date = timeSlot.Date,
