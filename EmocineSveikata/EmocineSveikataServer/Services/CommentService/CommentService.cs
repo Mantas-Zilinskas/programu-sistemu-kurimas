@@ -35,7 +35,7 @@ namespace EmocineSveikataServer.Services.CommentService
 				if (!comment.LikedBy.Contains(userId))
 				{
 					comment.LikedBy.Add(userId);
-					AddNotification(user.Username, comment.User.Id, liked: true, link: $"discussions/{comment.DiscussionId}");
+					await AddNotification(user.Username, comment.User.Id, liked: true, link: $"discussions/{comment.DiscussionId}");
 				}
 				else
 				{
@@ -59,9 +59,8 @@ namespace EmocineSveikataServer.Services.CommentService
 			comment.Replies.Add(reply);
 
 			if (comment.User.Id != userId)
-				AddNotification(user.Username, comment.User.Id, liked: false, link: $"discussions/{comment.DiscussionId}");
+				await AddNotification(user.Username, comment.User.Id, liked: false, link: $"discussions/{comment.DiscussionId}");
 
-			await CreateCommentAsync(reply);
 			comment = await _repository.GetCommentWithRelationsAsync(commentId);
 			return _mapper.Map<CommentDisplayDto>(comment);
 		}
@@ -106,7 +105,7 @@ namespace EmocineSveikataServer.Services.CommentService
 			return comments;
 		}
 
-		private async void AddNotification(string username, int recipientId,
+		private async Task AddNotification(string username, int recipientId,
 			bool liked = false, string link = "")
 		{
 			var message = "";
