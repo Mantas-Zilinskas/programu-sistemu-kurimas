@@ -112,9 +112,8 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			FixReplies(discussion);
 
 			if (discussion.User.Id != user.Id)
-				AddNotification(user.Username, discussion.User.Id, link: $"discussions/{discussionId}");
+				await AddNotification(user.Username, discussion.User.Id, link: $"discussions/{discussionId}");
 
-			await _commentService.CreateCommentAsync(comment);
 			await _repository.SaveChangesAsync();
 			discussion = await _repository.GetDiscussionWithRelationsAsync(discussionId);
 			return _mapper.Map<DiscussionDisplayDto>(discussion);
@@ -130,7 +129,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
 				if (!discussion.LikedBy.Contains(userId))
 				{
 					discussion.LikedBy.Add(userId);
-					AddNotification(user.Username, discussion.User.Id, liked: true, link: $"discussions/{discussionId}");
+					await AddNotification(user.Username, discussion.User.Id, liked: true, link: $"discussions/{discussionId}");
 				}
 				else
 				{
@@ -178,7 +177,7 @@ namespace EmocineSveikataServer.Services.DiscussionService
 			return discussionDto;
 		}
 
-		private async void AddNotification(string username, int recipientId, 
+		private async Task AddNotification(string username, int recipientId, 
 			bool liked = false, string link = "")
 		{
 			var message = "";
